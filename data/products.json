@@ -1,0 +1,102 @@
+{
+  "store": {
+    "name": "Luttu's Fashion",
+    "whatsapp_number": "+919999999999",
+    "currency": "₹",
+    "pickup_note": "Orders are picked up from our home boutique. We'll confirm pickup time on WhatsApp."
+  },
+  "products": [
+    {
+      "id": "KUR-101",
+      "title": "Handloom Cotton Kurti - Sky Blue",
+      "price": 1299,
+      "mrp": 1599,
+      "rating": 4.6,
+      "stock": 7,
+      "category": "Kurtis",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "thumbnail": "assets/img/kurti_sky.webp",
+      "images": [
+        "assets/img/kurti_sky.webp",
+        "assets/img/kurti_sky_close.webp"
+      ],
+      "description": "Breathable handloom cotton kurti with subtle embroidery. Perfect for everyday wear."
+    },
+    {
+      "id": "SAREE-204",
+      "title": "Silk Blend Saree - Maroon Zari",
+      "price": 2899,
+      "mrp": 3499,
+      "rating": 4.8,
+      "stock": 4,
+      "category": "Sarees",
+      "sizes": [],
+      "thumbnail": "assets/img/saree_maroon.webp",
+      "images": [
+        "assets/img/saree_maroon.webp",
+        "assets/img/saree_maroon_pallu.jpg"
+      ],
+      "description": "Rich maroon silk blend saree with traditional zari border. Festive-perfect."
+    },
+    {
+      "id": "SET-310",
+      "title": "Co-ord Set - Pastel Pink",
+      "price": 1699,
+      "mrp": 1999,
+      "rating": 4.4,
+      "stock": 10,
+      "category": "Co-ords",
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L"
+      ],
+      "thumbnail": "assets/img/coord_pink.jpg",
+      "images": [
+        "assets/img/coord_pink.jpg"
+      ],
+      "description": "Two-piece co-ord set in pastel pink with relaxed fit. Soft and comfy."
+    },
+    {
+      "id": "KID-055",
+      "title": "Kids Frock - Floral Yellow",
+      "price": 899,
+      "mrp": 1099,
+      "rating": 4.5,
+      "stock": 15,
+      "category": "Kids",
+      "sizes": [
+        "2-3Y",
+        "3-4Y",
+        "4-5Y",
+        "5-6Y"
+      ],
+      "thumbnail": "assets/img/kids_frock_yellow.webp",
+      "images": [
+        "assets/img/kids_frock_yellow.webp"
+      ],
+      "description": "Cheerful floral frock for kids with soft lining and back tie."
+    },
+    {
+      "id": "DUP-777",
+      "title": "Chiffon Dupatta - White",
+      "price": 349,
+      "mrp": 499,
+      "rating": 4.2,
+      "stock": 25,
+      "category": "Dupattas",
+      "sizes": [],
+      "thumbnail": "assets/img/dupatta_white.webp",
+      "images": [
+        "assets/img/dupatta_white.webp"
+      ],
+      "description": "Lightweight chiffon dupatta; pairs with kurtis and suits."
+    }
+  ]
+}
