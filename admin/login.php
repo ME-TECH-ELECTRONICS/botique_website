@@ -7,7 +7,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["username"]) && isset($
     $password = $_POST["password"];
     $captcha = $_POST["captcha"];
 
-    if(!)
+    if(!verifyCaptcha($captcha)) {
+        echo json_encode(["success" => false, "message" => "Invalid captcha."]);
+        exit;
+    }
     //prepare sql statement 
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);

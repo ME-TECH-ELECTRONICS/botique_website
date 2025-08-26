@@ -1,64 +1,87 @@
-// Minimal storefront logic
-const $ = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-
-const currency = "₹";
 const waNumber = +919447393193; // change to your WhatsApp number
 
-function formatCurrency(n){ return currency + (Number(n)||0).toLocaleString(); }
+let selectedProduct = null;
+let selectedSize = null;
 
+function openSizeModal(product) {
+  selectedProduct = product;
+  selectedSize = null;
+  const modalSizes = $("#modalSizes");
+  modalSizes.empty();
 
+  if (!product.sizes || product.sizes.length === 0) {
+    alert("error!!! no sizes available for this product");
+    return;
+  }
 
+  product.sizes.forEach(size => {
+    const btn = $("<button>")
+      .addClass("btn btn-outline-dark btn-sm rounded-pill")
+      .text(size)
+      .on("click", function () {
+        selectedSize = size;
+        modalSizes.find(".btn").removeClass("active");
+        $(this).addClass("active");
+      });
 
+    modalSizes.append(btn);
+  });
 
+  const modal = new bootstrap.Modal($("#sizeModal")[0]);
+  modal.show();
 
-
-function setProductCategories(){
-  const select = document.getElementById(categoryFilter);
-  if (!select) return;
-
-  // Clear old options
-  select.innerHTML = "";
-
-  
-  // Append options
-  cats.forEach(c => {
-    const option = document.createElement("option");
-    option.value = c;
-    option.textContent = c;
-    select.appendChild(option);
+  $("#modalAddBtn").off("click").on("click", function () {
+    if (!selectedSize) {
+      alert("Please select a size!");
+      return;
+    }
+    addToCart(product.id, selectedSize, 1);
+    updateCartBadge();
+    modal.hide();
   });
 }
 
+function setProductCategories() {
+  const select = $("#categoryFilter");
+  if (!select.length) return;
 
+  select.empty(); // clear old
+
+  productCategories.forEach(c => {
+    $("<option>").val(c).text(c).appendTo(select);
+  });
+}
 
 // Build product cards on index
-function buildCards(){
+function buildCards() {
   const grid = $("#productGrid");
-  if(!grid || !products) return;
-  const q = ($("#searchInput")?.value || "").toLowerCase();
-  const filterCat = $("#categoryFilter")?.value || "";
+  if (!grid.length || !products) return;
+
+  const q = ($("#searchInput").val() || "").toLowerCase();
+  const filterCat = $("#categoryFilter").val() || "";
   let list = products.slice();
 
-  if(q){
-    list = list.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+  if (q) {
+    list = list.filter(p => 
+      p.title.toLowerCase().includes(q) || 
+      p.category.toLowerCase().includes(q)
+    );
   }
-  if(filterCat){
+  if (filterCat) {
     list = list.filter(p => p.category === filterCat);
   }
-  const sort = $("#sortSelect")?.value;
-  if(sort === "price-asc") list.sort((a,b)=>a.price-b.price);
-  if(sort === "price-desc") list.sort((a,b)=>b.price-a.price);
-  if(sort === "rating-desc") list.sort((a,b)=>b.rating-a.rating);
-  if(sort === "newest") list.sort((a,b)=>b.id.localeCompare(a.id));
 
-  grid.innerHTML = "";
+  const sort = $("#sortSelect").val();
+  if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
+  if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
+  if (sort === "rating-desc") list.sort((a, b) => b.rating - a.rating);
+  if (sort === "newest") list.sort((a, b) => b.id.localeCompare(a.id));
+
+  grid.empty();
+
   list.forEach(p => {
-    const off = p.mrp>p.price ? Math.round(100*(p.mrp - p.price)/p.mrp) : 0;
-    const col = document.createElement("div");
-    col.className = "col-6 col-md-4 col-lg-3";
-    col.innerHTML = `
+    const off = p.mrp > p.price ? Math.round(100 * (p.mrp - p.price) / p.mrp) : 0;
+    const col = $("<div>").addClass("col-6 col-md-4 col-lg-3").html(`
       <div class="card h-100 border-0 shadow-sm">
         <a href="product.html?id=${encodeURIComponent(p.id)}" class="ratio ratio-1x1 rounded-4 overflow-hidden bg-light">
           <img src="${p.thumbnail}" class="object-fit-cover" alt="${p.title}">
@@ -68,8 +91,8 @@ function buildCards(){
           <h3 class="h6 m-0 text-truncate" title="${p.title}">${p.title}</h3>
           <div class="d-flex align-items-center gap-2">
             <strong>${formatCurrency(p.price)}</strong>
-            ${off?`<span class="text-muted text-decoration-line-through small">${formatCurrency(p.mrp)}</span>
-            <span class="badge text-bg-success small">${off}% off</span>`:""}
+            ${off ? `<span class="text-muted text-decoration-line-through small">${formatCurrency(p.mrp)}</span>
+            <span class="badge text-bg-success small">${off}% off</span>` : ""}
           </div>
           <div class="d-flex align-items-center gap-1 small text-warning">
             <i class="bi bi-star-fill"></i> <span>${p.rating}</span>
@@ -79,44 +102,35 @@ function buildCards(){
             <a class="btn btn-outline-dark btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">View</a>
           </div>
         </div>
-      </div>`;
-    grid.appendChild(col);
+      </div>
+    `);
+    grid.append(col);
   });
 
-  $$(".addBtn", grid).forEach(btn => {
-    btn.addEventListener("click", e => {
-      const id = btn.dataset.id;
-      addToCart(id, null, 1);
-    });
+  grid.find(".addBtn").off("click").on("click", function () {
+    const id = $(this).data("id");
+    const product = products.find(p => p.id === id);
+    if (product) {
+      openSizeModal(product);
+    } else {
+      alert("Product not found!");
+    }
   });
 }
 
-// Product page add-to-cart
-document.addEventListener("click", (e)=>{
-  if(e.target?.id === "addToCartBtn"){
-    const id = e.target.dataset.id;
-    const picked = document.querySelector('input[name="size"]:checked');
-    const size = picked ? picked.value : null;
-    addToCart(id, size, 1);
-  }
-});
-
-
-
-function setSearchInputAndCategoryFilterAndSortSelectUsingBuildCards(){
-    buildCards();
-    $("#searchInput")?.addEventListener("input", buildCards);
-    $("#categoryFilter")?.addEventListener("change", buildCards);
-    $("#sortSelect")?.addEventListener("change", buildCards);
+function setSearchInputAndCategoryFilterAndSortSelectUsingBuildCards() {
+  buildCards();
+  $("#searchInput").on("input", buildCards);
+  $("#categoryFilter").on("change", buildCards);
+  $("#sortSelect").on("change", buildCards);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+$(document).ready(async function () {
   await getProducts();
   setSearchInputAndCategoryFilterAndSortSelectUsingBuildCards();
   setProductCategories();
   updateCartBadge();
-  // Set current year in footer
-  $("#year") && ($("#year").textContent = new Date().getFullYear());
- 
-});
 
+  // Set current year in footer
+  $("#year").text(new Date().getFullYear());
+});

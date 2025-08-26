@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Boutique - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="/assets/css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Dress Boutique Admin</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-target="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-target="products">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Products</span>
+                </div>
+                <div class="menu-item" data-target="create-product">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Product</span>
+                </div>
+                <div class="menu-item" data-target="orders">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Orders</span>
+                </div>
+                <div class="menu-item" data-target="customers">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </div>
+                <div class="menu-item" data-target="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </div>
+                <div class="menu-item" data-target="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navigation -->
+            <div class="top-nav">
+                <div class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=7e57c2&color=fff" alt="User">
+                    <span>Admin User</span>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div class="content-section active" id="dashboard">
+                    <h2>Dashboard</h2>
+                    <p>Welcome to your dress store admin panel. Here's an overview of your store.</p>
+
+                    <div class="cards-row">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Total Sales</div>
+                                <div class="card-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">$24,560</div>
+                            <div class="card-growth">+12% from last month</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Orders</div>
+                                <div class="card-icon">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">356</div>
+                            <div class="card-growth">+8% from last month</div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Customers</div>
+                                <div class="card-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="card-value">1,243</div>
+                            <div class="card-growth">+5% from last month</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h3 style="padding: 15px;">Recent Orders</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#ORD-7562</td>
+                                    <td>Sarah Johnson</td>
+                                    <td>Jun 24, 2023</td>
+                                    <td>$156.00</td>
+                                    <td>Delivered</td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7561</td>
+                                    <td>Michael Brown</td>
+                                    <td>Jun 23, 2023</td>
+                                    <td>$89.50</td>
+                                    <td>Processing</td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7560</td>
+                                    <td>Emily Davis</td>
+                                    <td>Jun 23, 2023</td>
+                                    <td>$245.75</td>
+                                    <td>Shipped</td>
+                                </tr>
+                                <tr>
+                                    <td>#ORD-7559</td>
+                                    <td>John Wilson</td>
+                                    <td>Jun 22, 2023</td>
+                                    <td>$72.25</td>
+                                    <td>Delivered</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div class="content-section" id="products">
+                    <h2>Products</h2>
+                    <p>Manage your dress collection.</p>
+
+                    <div class="table-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
+                            <h3>All Products</h3>
+                            <button class="btn btn-primary">Add New Product</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Summer Floral Dress</td>
+                                    <td>Casual</td>
+                                    <td>$59.99</td>
+                                    <td>42</td>
+                                    <td>
+                                        <i class="fas fa-edit" style="color: #4caf50; margin-right: 10px; cursor: pointer;"></i>
+                                        <i class="fas fa-trash" style="color: #f44336; cursor: pointer;"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Elegant Evening Gown</td>
+                                    <td>Formal</td>
+                                    <td>$129.99</td>
+                                    <td>15</td>
+                                    <td>
+                                        <i class="fas fa-edit" style="color: #4caf50; margin-right: 10px; cursor: pointer;"></i>
+                                        <i class="fas fa-trash" style="color: #f44336; cursor: pointer;"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Office Professional Dress</td>
+                                    <td>Work</td>
+                                    <td>$79.99</td>
+                                    <td>28</td>
+                                    <td>
+                                        <i class="fas fa-edit" style="color: #4caf50; margin-right: 10px; cursor: pointer;"></i>
+                                        <i class="fas fa-trash" style="color: #f44336; cursor: pointer;"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Create Product Section -->
+                <div class="content-section" id="create-product">
+                    <h2>Create Product</h2>
+                    <p>Add a new dress to your collection.</p>
+
+                    <div class="card" style="max-width: 800px;">
+                        <form>
+                            <div class="form-group">
+                                <label for="productName">Product Name</label>
+                                <input type="text" id="productName" placeholder="Enter product name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productDescription">Description</label>
+                                <textarea id="productDescription" placeholder="Enter product description"></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label for="productPrice">Price ($)</label>
+                                    <input type="number" id="productPrice" placeholder="0.00" step="0.01">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="productStock">Stock</label>
+                                    <input type="number" id="productStock" placeholder="0">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label for="productCategory">Category</label>
+                                    <select id="productCategory">
+                                        <option value="">Select Category</option>
+                                        <option value="casual">Casual</option>
+                                        <option value="formal">Formal</option>
+                                        <option value="work">Work</option>
+                                        <option value="party">Party</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="productStatus">Status</label>
+                                    <select id="productStatus">
+                                        <option value="active">Active</option>
+                                        <option value="draft">Draft</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="productImage">Product Image</label>
+                                <input type="file" id="productImage">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Create Product</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Other sections would be defined here -->
+                <div class="content-section" id="orders">
+                    <h2>Orders</h2>
+                    <p>Manage and track customer orders.</p>
+                    <!-- Order content would go here -->
+                </div>
+
+                <div class="content-section" id="customers">
+                    <h2>Customers</h2>
+                    <p>View and manage your customer database.</p>
+                    <!-- Customer content would go here -->
+                </div>
+
+                <div class="content-section" id="analytics">
+                    <h2>Analytics</h2>
+                    <p>Analyze your store performance.</p>
+                    <!-- Analytics content would go here -->
+                </div>
+
+                <div class="content-section" id="settings">
+                    <h2>Settings</h2>
+                    <p>Configure your store settings.</p>
+                    <!-- Settings content would go here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src = "/assets/js/admin.js" defer ></script>
+</body>
+
+</html>

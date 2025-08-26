@@ -50,16 +50,16 @@ $(document).ready(function () {
                 data: { username: em, password: p },
                 success: function (response) {
                     if (response.success) {
-                        $('#successMessage').fadeIn();
-                        // Reset form after 2 seconds (simulating redirect)
+                        $('#successMessage').text('Login successful!').addClass('success').removeClass('error').fadeIn();
                         setTimeout(function () {
                             $('#loginForm')[0].reset();
                             $('#successMessage').fadeOut();
-                            $('.input-group').removeClass('success');
                             window.location.href = 'index.php';
                         }, 2000);
                     } else {
-                        $('#successMessage').val(response.message).fadeIn();
+                        $('#loginForm')[0].reset();
+                        turnstile.reset('.cf-turnstile');
+                        $('#successMessage').text(response.message).addClass('error').removeClass('success').fadeIn();
                         setTimeout(function () {
                             $('#successMessage').fadeOut();
                         }, 2000);
