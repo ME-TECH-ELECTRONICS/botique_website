@@ -1,8 +1,8 @@
 $(document).ready(function () {
     // Toggle password visibility
-    const email = $('#email');
+    const username = $('#username');
     const password = $('#password');
-    email.on('input', function () {
+    username.on('input', function () {
         let val = this.value.replace(/[^a-zA-Z0-9@.]/g, '');
         if (val.length > 40) {
             val = val.substring(0, 40);
@@ -12,8 +12,8 @@ $(document).ready(function () {
 
     password.on('input', function () {
         let val = this.value.replace(/[^a-zA-Z0-9_@$!%*?&.]/g, '');
-        if (val.length > 20) {
-            val = val.substring(0, 20);
+        if (val.length > 40) {
+            val = val.substring(0, 40);
         }
         this.value = val;
     });
@@ -36,45 +36,38 @@ $(document).ready(function () {
     $('#loginForm').submit(function (e) {
         e.preventDefault();
 
-        let em = email.val().trim();
+        let em = username.val().trim();
         let p = password.val().trim();
-        console.log(em, p);
+        const captchaResponse = $("[name=cf-turnstile-response]").val();
         if (!em) {
-            showError('emailGroup', 'emailError', 'Email is required');
-            return
-
+            $('#errorMessage').text('Username is required.').fadeIn();
+            return false;
         } else {
-            showSuccess('emailGroup');
+            $.ajax({
+                url: 'login.php',
+                method: 'POST',
+                dataType: 'json',
+                data: { username: em, password: p },
+                success: function (response) {
+                    if (response.success) {
+                        $('#successMessage').text('Login successful!').addClass('success').removeClass('error').fadeIn();
+                        setTimeout(function () {
+                            $('#loginForm')[0].reset();
+                            $('#successMessage').fadeOut();
+                            window.location.href = 'index.php';
+                        }, 2000);
+                    } else {
+                        $('#loginForm')[0].reset();
+                        turnstile.reset('.cf-turnstile');
+                        $('#successMessage').text(response.message).addClass('error').removeClass('success').fadeIn();
+                        setTimeout(function () {
+                            $('#successMessage').fadeOut();
+                        }, 2000);
+                    }
+                }
+            });
+
         }
-
-        if (!p) {
-            showError('passwordGroup', 'passwordError', 'Password is required');
-            return;
-        } else {
-            showSuccess('passwordGroup');
-        }
-
-        // If form is valid, show success message
-
-        $('#successMessage').fadeIn();
-        // Reset form after 2 seconds (simulating redirect)
-        setTimeout(function () {
-            $('#loginForm')[0].reset();
-            $('#successMessage').fadeOut();
-            $('.input-group').removeClass('success');
-        }, 2000);
-
-        return false;
     });
-
-    // Helper functions
-    function showError(groupId, errorId, message) {
-        $(`#${groupId}`).addClass('error').removeClass('success');
-        $(`#${errorId}`).text(message).fadeIn();
-    }
-
-    function showSuccess(groupId) {
-        $(`#${groupId}`).removeClass('error').addClass('success');
-        $(`#${groupId} .error-message`).fadeOut();
-    }
+    
 });
