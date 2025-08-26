@@ -2,9 +2,9 @@
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-const store = window.__STORE__;
-const currency = store?.store?.currency ?? "₹";
-const waNumber = (store?.store?.whatsapp_number ?? "").replace(/[^0-9]/g, "");
+
+const currency = "₹";
+const waNumber = +919447393193; // change to your WhatsApp number
 
 function formatCurrency(n){ return currency + (Number(n)||0).toLocaleString(); }
 
@@ -42,15 +42,35 @@ function updateCartBadge(){
   const count = readCart().reduce((s,it)=>s+it.qty,0);
   const el = $("#cartCount"); if(el) el.textContent = count;
 }
+
+function setProductCategories(){
+  const select = document.getElementById(categoryFilter);
+  if (!select) return;
+
+  // Clear old options
+  select.innerHTML = "";
+
+  
+  // Append options
+  cats.forEach(c => {
+    const option = document.createElement("option");
+    option.value = c;
+    option.textContent = c;
+    select.appendChild(option);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", setProductCategories);
+
 document.addEventListener("DOMContentLoaded", updateCartBadge);
 
 // Build product cards on index
 function buildCards(){
   const grid = $("#productGrid");
-  if(!grid || !store?.products) return;
+  if(!grid || !products) return;
   const q = ($("#searchInput")?.value || "").toLowerCase();
   const filterCat = $("#categoryFilter")?.value || "";
-  let list = store.products.slice();
+  let list = products.slice();
 
   if(q){
     list = list.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
@@ -123,7 +143,7 @@ document.addEventListener("click", (e)=>{
 function renderCartTable(){
   const body = $("#cartTableBody");
   if(!body) return;
-  const map = Object.fromEntries(store.products.map(p => [p.id, p]));
+  const map = Object.fromEntries(products.map(p => [p.id, p]));
   const cart = readCart();
   let total = 0, items = 0;
   body.innerHTML = "";
@@ -171,7 +191,7 @@ $("#checkoutForm")?.addEventListener("submit", (e)=>{
   const cart = readCart();
   if(cart.length===0){ alert("Your cart is empty."); return; }
 
-  const map = Object.fromEntries(store.products.map(p => [p.id, p]));
+  const map = Object.fromEntries(products.map(p => [p.id, p]));
   let lines = [`New order from ${name}`, "", "Items:"];
   cart.forEach(it => {
     const p = map[it.id];

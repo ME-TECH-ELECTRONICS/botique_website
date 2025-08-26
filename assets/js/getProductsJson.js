@@ -1,9 +1,18 @@
 
+var products = {};
+var productCategories = [];
+// }
 
 document.addEventListener("DOMContentLoaded", async () => {
     // Call your PHP backend
-    let resp = await getProducts();
-    console.log(resp);
+    //here
+    let resp = await fetch("/getProducts.php");
+    products = resp.json();l
+    productCategories =  [...new Set(products.map(p => p.category))];
+    productCategories.sort();
+        
+    // let resp = await getProducts();
+    // console.log(resp);
 
     // .then(response => {
     //   if (!response.ok) {
@@ -35,22 +44,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     //   console.error("Error fetching products:", error);
     // });
 
-    function getProducts() {
-        return new Promise((resolve, reject) => {
-            fetch("/getProducts.php")
-                .then(resp => {
-                    if (!resp.ok) {
-                        reject("HTTP error: " + resp.status);
-                    }
-                    return resp.json();
-                })
-                .then(data => resolve(data))
-                .catch(err => reject(err));
-        });
-    }
 });
 
 
-
-
-console.log("/${p.thumbnail}")
