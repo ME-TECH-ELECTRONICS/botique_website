@@ -1,20 +1,25 @@
 
-var products = {};
+var products = [];
 var productCategories = [];
 // }
-
-document.addEventListener("DOMContentLoaded", async () => {
+let isProductsLoaded = false
+async function getProducts() {
     // Call your PHP backend
     //here
+    if(isProductsLoaded) return;
     let resp = await fetch("/getProducts.php");
-    products = resp.json();l
+    products =  await resp.json();
+    console.log(products); // ✅ see all products in console
+
     productCategories =  [...new Set(products.map(p => p.category))];
     productCategories.sort();
-        
+
+    console.log(`printing product categories ${productCategories}`); // ✅ see all categories in console
+    isProductsLoaded = true;
     // let resp = await getProducts();
     // console.log(resp);
 
-    // .then(response => {
+    // .then(response => {  
     //   if (!response.ok) {
     //     throw new Error("Network response was not ok " + response.statusText);
     //   }
@@ -44,6 +49,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     //   console.error("Error fetching products:", error);
     // });
 
-});
+}
 
 

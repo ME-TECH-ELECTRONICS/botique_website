@@ -7,6 +7,7 @@
     <title>Modern Login Form</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <link rel="stylesheet" href="/assets/css/login.css">
 </head>
 
@@ -15,10 +16,10 @@
         <form class="login-form" id="loginForm">
             <h2 class="form-title">Admin Login</h2>
 
-            <div class="input-group" id="emailGroup">
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="email" name="email" placeholder="Enter your email">
-                <div class="error-message" id="emailError"></div>
+            <div class="input-group" id="usernameGroup">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" name="username" placeholder="Enter your username">
+                <div class="error-message" id="usernameError"></div>
             </div>
 
             <div class="input-group" id="passwordGroup">
@@ -29,10 +30,12 @@
                 </span>
                 <div class="error-message" id="passwordError"></div>
             </div>
-
+            <div class="captcha">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAABi62zWbiXUMcu5A" data-theme="light"></div>
+            </div>
             <button type="submit" class="btn">Login</button>
 
-            <div class="success-message" id="successMessage">
+            <div class="success-message" id="message">
                 Login successful! Redirecting...
             </div>
 

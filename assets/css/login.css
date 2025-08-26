@@ -208,6 +208,12 @@
             box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
         }
 
+        .captcha {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
         @media (max-width: 480px) {
             .login-form {
                 padding: 30px 25px;
