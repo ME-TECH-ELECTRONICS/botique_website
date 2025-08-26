@@ -183,7 +183,7 @@
                     <h2>Create Product</h2>
                     <p>Add a new dress to your collection.</p>
 
-                    <div class="card" style="max-width: 800px;">
+                    <div class="card" >
                         <form id="createProductForm">
                             <div class="form-group">
                                 <label for="productName">Product Name</label>
@@ -221,6 +221,11 @@
                                     <input type="text" id="newCategory" placeholder="Type new category">
                                 </div>
 
+                                <div class="form-group" id="newCategoryGroup" style="display: none;">
+                                    <label for="newCategory">Enter New Category</label>
+                                    <input type="text" id="newCategory" placeholder="Type new category">
+                                </div>
+
                                 <div class="form-group">
                                     <label for="productStockStatus">Stock Status</label>
                                     <select id="productStockStatus">
@@ -230,15 +235,15 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="form-group">
+                            <div class="form-group">
                                 <label for="productImage">Product Image</label>
                                 <input type="file" id="productImage">
-                            </div> -->
+                            </div>
 
-                            <!-- <div class="upload-box" id="uploadBox">
+                            <div class="upload-box" id="uploadBox">
                                 <p>Click or Drop Images Here (Max 1MB each)</p>
                                 <input type="file" id="productImages" accept="image/*" multiple>
-                            </div> -->
+                            </div>
 
                             <div class="preview" id="preview"></div>
 

@@ -53,6 +53,7 @@ $(document).ready(async function () {
     });
     await getProducts();
     renderTable();
+    renderCategorySelector();
     // Handle menu item clicks
     $('.menu-item').click(function () {
         // Remove active class from all menu items

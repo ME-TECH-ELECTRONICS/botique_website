@@ -3,6 +3,8 @@ const waNumber = +919447393193; // change to your WhatsApp number
 let selectedProduct = null;
 let selectedSize = null;
 
+let sizes = [];
+
 function openSizeModal(product) {
   selectedProduct = product;
   selectedSize = null;
@@ -134,3 +136,8 @@ $(document).ready(async function () {
   // Set current year in footer
   $("#year").text(new Date().getFullYear());
 });
+
+function getSizeList(product) {
+  if (!product || !product.sizes) return [];
+  
+}
