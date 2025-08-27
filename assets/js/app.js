@@ -76,7 +76,6 @@ function buildCards() {
   const sort = $("#sortSelect").val();
   if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
   if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
-  if (sort === "rating-desc") list.sort((a, b) => b.rating - a.rating);
   if (sort === "newest") list.sort((a, b) => b.id.localeCompare(a.id));
 
   grid.empty();
