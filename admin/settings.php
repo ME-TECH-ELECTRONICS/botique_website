@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($input['whatsappNumber'])) {
        //save to database $conn
        $whatsappNumber = $input['whatsappNumber'];
-       $stmt = $conn->prepare("UPDATE settings SET whatsapp_number = ? WHERE id = 1");
+       $stmt = $conn->prepare("UPDATE settings SET value = ? WHERE name = 'whatsappNumber'");
        $stmt->bind_param("s", $whatsappNumber);
        if ($stmt->execute()) {
            echo json_encode(['status' => 'success', 'message' => 'Settings updated successfully.']);
