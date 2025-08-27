@@ -1,18 +1,49 @@
-:root{
+:root {
   --radius-2xl: 1.25rem;
 }
-body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-.navbar .badge { font-size: .65rem; }
-.hero{
-  background: linear-gradient(135deg,#f8f9fa, #e9ecef);
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.navbar .badge {
+  font-size: .65rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   border-radius: var(--radius-2xl);
   border: 1px solid #dee2e6;
 }
-.card, .btn, .form-control, .rounded-4 { border-radius: var(--radius-2xl) !important; }
-.thumb{ object-fit: cover; cursor: pointer; }
-.object-fit-cover{ object-fit: cover; }
-#productGrid .card{ transition: transform .12s ease, box-shadow .12s ease; }
-#productGrid .card:hover{ transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
-@media (min-width: 992px){
-  .hero{ padding: 3rem !important; }
+
+.card,
+.btn,
+.form-control,
+.rounded-4 {
+  border-radius: var(--radius-2xl) !important;
+}
+
+.thumb {
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.object-fit-cover {
+  object-fit: contain;
+}
+
+#productGrid .card {
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+#productGrid .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .08);
+}
+
+@media (min-width: 992px) {
+  .hero {
+    padding: 3rem !important;
+  }
 }

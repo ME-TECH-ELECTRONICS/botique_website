@@ -248,19 +248,19 @@
                     <div class="card">
                         <form id="createProductForm" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="productName">Product Name</label>
+                                <label for="productName">Product Name*</label>
                                 <input type="text" id="productName" placeholder="Enter product name" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="productDescription">Description</label>
+                                <label for="productDescription">Description*</label>
                                 <textarea id="productDescription" placeholder="Enter product description"
                                     required></textarea>
                             </div>
 
                             <!-- Sizes Selector Panel -->
                             <div class="form-group">
-                                <label>Available Sizes</label>
+                                <label>Available Sizes*</label>
                                 <div id="sizesPanel" class="d-flex flex-wrap gap-2 mb-3"></div>
                                 <!-- Button to open modal -->
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -294,21 +294,21 @@
                             <!-- Price and MRP Selection -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="productPrice">Price (₹)</label>
+                                    <label for="productPrice">Price (₹)*</label>
                                     <input type="number" id="productPrice" placeholder="0.00" step="0.01">
                                 </div>
 
 
                                 <div class="form-group">
-                                    <label for="productMRP">MRP (₹)</label>
+                                    <label for="productMRP">MRP (₹)*</label>
                                     <input type="number" id="productMRP" placeholder="0.00" step="0.01">
                                 </div>
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="productCategory">Category</label>
-                                    <select id="productCategory" onchange="toggleNewCategoryInput()">
+                                    <label for="productCategory">Category*</label>
+                                    <select id="productCategory" onchange="toggleNewCategoryInput()" required>
 
                                     </select>
                                 </div>
@@ -324,10 +324,10 @@
                                 </div> -->
 
                                 <div class="form-group">
-                                    <label for="productStockStatus">Stock Status</label>
-                                    <select id="productStockStatus">
-                                        <option value="true">In stock</option>
-                                        <option value="false">Out of Stock</option>
+                                    <label for="productStockStatus">Stock Status*</label>
+                                    <select id="productStockStatus" required>
+                                        <option value="1">In stock</option>
+                                        <option value="0">Out of Stock</option>
                                     </select>
                                 </div>
                             </div>
@@ -369,7 +369,7 @@
                                     </div>
                                     <div class="upload-btn" id="multiple-upload-btn">Browse Files</div>
                                     <input type="file" id="multiple-upload-input" class="file-input" accept="image/*"
-                                        multiple >
+                                        multiple>
                                     <div class="upload-hint">Supports JPG, PNG, GIF - Max 1MB each</div>
                                 </div>
 
@@ -388,33 +388,43 @@
 
 
                 <!-- Other sections would be defined here -->
-                <div class="content-section" id="orders">
+                <!-- <div class="content-section" id="orders">
                     <h2>Orders</h2>
                     <p>Manage and track customer orders.</p>
-                    <!-- Order content would go here -->
+
                 </div>
 
                 <div class="content-section" id="customers">
                     <h2>Customers</h2>
                     <p>View and manage your customer database.</p>
-                    <!-- Customer content would go here -->
+
                 </div>
 
                 <div class="content-section" id="analytics">
                     <h2>Analytics</h2>
                     <p>Analyze your store performance.</p>
-                    <!-- Analytics content would go here -->
-                </div>
+
+                </div> -->
 
                 <div class="content-section" id="settings">
                     <h2>Settings</h2>
                     <p>Configure your store settings.</p>
-                    <!-- Settings content would go here -->
+                    <div class="card">
+                        <form id="settingsForm" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="whatsappNumber">Whatsapp Number*</label>
+                                <input type="number" id="whatsappNumber" placeholder="Enter Whatsapp number" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <div id="notifyBox" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999; display:none;">
+        <div class="alert alert-info shadow" role="alert"></div>
+    </div>
     <script src="/assets/js/admin.js"></script>
     <script src="/assets/js/getProductsJson.js"></script>
 </body>

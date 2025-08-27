@@ -7,7 +7,7 @@ $(document).ready(async function () {
         '#productPrice': { regex: /[^0-9.]/g, max: 10 },
         '#productMRP': { regex: /[^0-9.]/g, max: 10 },
         '#productCategory': { regex: /[^a-zA-Z0-9]/g, max: 20 },
-        // '#confirmPassword': { regex: /[^a-zA-Z0-9_@$!%*?&.]/g, max: 20 },
+        '#whatsappNumber': { regex: /[^0-9]/g, max: 10 },
         // '#username': { regex: /[^a-zA-Z0-9_]/g, max: 15 },
         // '#registerEmail': { regex: /[^a-zA-Z0-9@.]/g, max: 40 },
         // '#forgotEmail': { regex: /[^a-zA-Z0-9@.]/g, max: 40 }
@@ -30,6 +30,35 @@ $(document).ready(async function () {
     // Clicking box opens file dialog
     $("#uploadBox").on("click", function () {
         $fileInput.trigger("click");
+    });
+
+    $("#settingsForm").on('submit', function (e) {
+        e.preventDefault();
+
+        const whatsappNumber = $("#whatsappNumber").val();
+        if (!whatsappNumber || whatsappNumber.length !== 10) {
+            notify("Please enter a valid 10-digit Whatsapp number", "danger");
+            return;
+        }
+        // Perform AJAX request to save settings
+        $.ajax({
+            url: 'settings.php',
+            type: 'POST',
+            data: {
+                action: 'update_settings',
+                whatsappNumber: whatsappNumber
+            },
+            success: function (response) {
+                if (response.success) {
+                    notify(response.message, "success");
+                } else {
+                    notify(response.message, "danger");
+                }
+            },
+            error: function () {
+                notify('Error submitting form', "danger");
+            }
+        });
     });
 
     $('#createProductForm').on('submit', function (e) {
@@ -57,12 +86,6 @@ $(document).ready(async function () {
             formData.append('images[]', file);
         });
 
-        // $('')[0].files.forEach((file, idx) => {
-        //     f
-        // });
-
-        // Create FormData object to send files via AJAX
-
 
         // Add selected sizes to form data
         const sizes = [];
@@ -70,7 +93,6 @@ $(document).ready(async function () {
             sizes.push($(this).val());
 
         });
-        console.log("Selected size:", sizes.join(','));
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
@@ -87,24 +109,19 @@ $(document).ready(async function () {
             processData: false,
             contentType: false,
             success: function (response) {
-                try {
-                    const result = JSON.parse(response);
-                    if (result.success) {
-                        alert('Product created successfully!');
-                        // Reset form
-                        $('#createProductForm')[0].reset();
-                        $('#sizesPanel').empty();
-                        $('#single-preview-list').empty();
-                        $('#multiple-preview-list').empty();
-                    } else {
-                        alert('Error: ' + result.message);
-                    }
-                } catch (e) {
-                    alert('Error parsing server response');
+                if (response.success) {
+                    notify(response.message, "success")
+                    // Reset form
+                    $('#createProductForm')[0].reset();
+                    $('#sizesPanel').empty();
+                    $('#single-preview-list').empty();
+                    $('#multiple-preview-list').empty();
+                } else {
+                    notify(response.message, "danger");
                 }
             },
             error: function () {
-                alert('Error submitting form');
+                notify('Error submitting form', "danger");
             }
         });
     });
@@ -521,7 +538,7 @@ async function editProduct(product) {
 // Delete product function
 async function deleteProduct(productId) {
     try {
-        const response = await fetch("delete_product.php", {
+        const response = await fetch("deleteProduct.php", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -688,3 +705,18 @@ $("#editProductForm").on("submit", function (e) {
     $("#editProductModal").modal("hide");
     reloadPRoductsAndRender();
 });
+
+function notify(msg, type="info", timeout=3000) {
+  const box = $("#notifyBox");
+  const alert = box.find(".alert");
+
+  alert.removeClass()
+       .addClass(`alert alert-${type} shadow`)
+       .html(msg);
+
+  box.stop(true, true).fadeIn(200);
+
+  setTimeout(() => {
+    box.fadeOut(400);
+  }, timeout);
+}

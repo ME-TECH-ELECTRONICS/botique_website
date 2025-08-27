@@ -14,7 +14,6 @@ async function getProducts() {
     productCategories =  [...new Set(products.map(p => p.category))];
     productCategories.sort();
 
-    console.log(`printing product categories ${productCategories}`); // ✅ see all categories in console
     isProductsLoaded = true;
     // let resp = await getProducts();
     // console.log(resp);

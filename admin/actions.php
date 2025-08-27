@@ -1,6 +1,5 @@
 <?php
 require_once '../config.php'; // fixed path (remove starting slash if same dir)
-
 // Set appropriate headers
 header('Content-Type: application/json');
 
@@ -18,7 +17,7 @@ $sanitizedProductName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $productName);
 // Define allowed file types and maximum size
 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 $maxFileSize = 1048576; // 1MB in bytes
-$uploadDir = 'uploads/';
+$uploadDir = '../assets/img/';
 
 if (!file_exists($uploadDir)) {
     mkdir($uploadDir, 0755, true);
@@ -128,7 +127,7 @@ if (count($errors) === 0) {
     $imagesStr = implode(',', $imagePaths); // store paths as CSV
 
     $stmt->bind_param(
-        "sdddssssd",
+        "sdddsssss",
         $productData['title'],
         $productData['price'],
         $productData['mrp'],

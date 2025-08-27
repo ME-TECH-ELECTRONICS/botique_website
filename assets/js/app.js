@@ -43,6 +43,7 @@ function openSizeModal(product) {
   });
 }
 
+$("#chatLink").attr('href', `https://wa.me/${waNumber}?text=Hi`)
 function setProductCategories() {
   const select = $("#categoryFilter");
   if (!select.length) return;
@@ -95,9 +96,7 @@ function buildCards() {
             ${off ? `<span class="text-muted text-decoration-line-through small">${formatCurrency(p.mrp)}</span>
             <span class="badge text-bg-success small">${off}% off</span>` : ""}
           </div>
-          <div class="d-flex align-items-center gap-1 small text-warning">
-            <i class="bi bi-star-fill"></i> <span>${p.rating}</span>
-          </div>
+          
           <div class="d-flex gap-2 mt-2">
             <button class="btn btn-dark btn-sm flex-fill addBtn" data-id="${p.id}"><i class="bi bi-bag-plus"></i> Add</button>
             <a class="btn btn-outline-dark btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">View</a>

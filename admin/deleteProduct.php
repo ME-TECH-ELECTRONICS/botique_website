@@ -1,6 +1,6 @@
 <?php
 // delete_product.php
-require_once '/config.php';
+require_once '../config.php';
 // Database connection
 
 // Check connection
