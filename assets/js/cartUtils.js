@@ -36,11 +36,10 @@ function addToCart(id, size, qty = 1) {
 }
 
 function updateQty(id, delta, size) {
-  const cart = readCart();
+  const cart = readCart();  
   const idx = cart.findIndex(it => it.id === id && it.size === size);
   if (idx > -1) {
     let qty = cart[idx].qty + delta;
-    console.log(`Updating ${id} size ${size} by ${delta}, new qty: ${qty}`);
     if(qty <= 0) {
       // Remove item if qty goes to zero or below
      removeItem(id, size);
@@ -85,14 +84,14 @@ function renderCartTable() {
       <td class="text-center">${formatCurrency(p.price)}</td>
       <td class="text-center">
         <div class="btn-group btn-group-sm" role="group">
-          <button class="btn btn-outline-secondary" onclick="updateQty('${it.id}',-1,'${it.size ?? ""}')">-</button>
+          <button class="btn btn-outline-secondary" onclick="updateQty(${it.id},-1,'${it.size ?? ""}')">-</button>
           <button class="btn btn-outline-secondary" disabled>${it.qty}</button>
-          <button class="btn btn-outline-secondary" onclick="updateQty('${it.id}',1,'${it.size ?? ""}')">+</button>
+          <button class="btn btn-outline-secondary" onclick="updateQty(${it.id},1,'${it.size ?? ""}')">+</button>
         </div>
       </td>
       <td class="text-end pe-3">${formatCurrency(sub)}</td>
       <td class="text-end">
-        <button class="btn btn-link text-danger" onclick="removeItem('${it.id}','${it.size ?? ""}')">
+        <button class="btn btn-link text-danger" onclick="removeItem(${it.id},'${it.size ?? ""}')">
           <i class="bi bi-trash"></i>
         </button>
       </td>
