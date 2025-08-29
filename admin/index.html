@@ -7,6 +7,8 @@
     <title>Dress Boutique - Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 
@@ -177,42 +179,137 @@
                         </div>
                         <div id="pagination" style="margin-top:10px;"></div>
                     </div>
+
+                    <!-- Edit Product Modal -->
+                    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content dark-modal">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <form id="editProductForm">
+                                    <div class="modal-body">
+                                        <div class="form-group mb-3">
+                                            <label for="editProductName">Product Name</label>
+                                            <input type="text" class="form-control" id="editProductName">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="editProductDescription">Description</label>
+                                            <textarea class="form-control" id="editProductDescription"></textarea>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="editProductPrice">Price (₹)</label>
+                                            <input type="number" class="form-control" id="editProductPrice" step="0.01">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="editProductMRP">MRP (₹)</label>
+                                            <input type="number" class="form-control" id="editProductMRP" step="0.01">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="editProductCategory">Category</label>
+                                            <select class="form-select editFormSelect" id="editProductCategory"
+                                                onchange="toggleNewCategoryInputEditSection()"></select>
+                                        </div>
+
+                                        <div class="form-group mb-3" id="newCategoryGroupEdit" style="display: none;">
+                                            <label for="newCategoryEdit">Enter New Category</label>
+                                            <input type="text" id="newCategoryEdit" placeholder="Type new category">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Available Sizes</label>
+                                            <div id="eidtSizesPanel" class="d-flex flex-wrap gap-2 mb-3"></div>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="editProductStockStatus">Stock Status</label>
+                                            <select class="form-select editFormSelect" id="editProductStockStatus">
+                                                <option value="InStock">In Stock</option>
+                                                <option value="OutOfStock">Out of Stock</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- Create Product Section -->
                 <div class="content-section" id="create-product">
                     <h2>Create Product</h2>
                     <p>Add a new dress to your collection.</p>
 
-                    <div class="card" >
-                        <form id="createProductForm">
+                    <div class="card">
+                        <form id="createProductForm" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label for="productName">Product Name</label>
-                                <input type="text" id="productName" placeholder="Enter product name">
+                                <label for="productName">Product Name*</label>
+                                <input type="text" id="productName" placeholder="Enter product name" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="productDescription">Description</label>
-                                <textarea id="productDescription" placeholder="Enter product description"></textarea>
+                                <label for="productDescription">Description*</label>
+                                <textarea id="productDescription" placeholder="Enter product description"
+                                    required></textarea>
                             </div>
 
+                            <!-- Sizes Selector Panel -->
+                            <div class="form-group">
+                                <label>Available Sizes*</label>
+                                <div id="sizesPanel" class="d-flex flex-wrap gap-2 mb-3"></div>
+                                <!-- Button to open modal -->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#addSizeModal">
+                                    + Add Sizes
+                                </button>
+                            </div>
+
+
+                            <!-- Add Sizes Modal -->
+                            <div class="modal fade" id="addSizeModal" tabindex="-1" aria-labelledby="addSizeModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content  dark-modal">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="addSizeModalLabel">Add New Sizes</h5>
+                                            <button type="button" class="btn-close btn-close-white"
+                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="text" id="newSizesInput" class="form-control"
+                                                placeholder="Enter sizes separated by commas (e.g. 3XL,4XL,Kids)">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="addNewSizes()">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Price and MRP Selection -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="productPrice">Price (₹)</label>
+                                    <label for="productPrice">Price (₹)*</label>
                                     <input type="number" id="productPrice" placeholder="0.00" step="0.01">
                                 </div>
 
 
                                 <div class="form-group">
-                                    <label for="productMRP">MRP (₹)</label>
+                                    <label for="productMRP">MRP (₹)*</label>
                                     <input type="number" id="productMRP" placeholder="0.00" step="0.01">
                                 </div>
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
-                                    <label for="productCategory">Category</label>
-                                    <select id="productCategory" onchange="toggleNewCategoryInput()">
-                                        
+                                    <label for="productCategory">Category*</label>
+                                    <select id="productCategory" onchange="toggleNewCategoryInput()" required>
+
                                     </select>
                                 </div>
 
@@ -221,31 +318,68 @@
                                     <input type="text" id="newCategory" placeholder="Type new category">
                                 </div>
 
-                                <div class="form-group" id="newCategoryGroup" style="display: none;">
+                                <!-- <div class="form-group" id="newCategoryGroup" style="display: none;">
                                     <label for="newCategory">Enter New Category</label>
                                     <input type="text" id="newCategory" placeholder="Type new category">
-                                </div>
+                                </div> -->
 
                                 <div class="form-group">
-                                    <label for="productStockStatus">Stock Status</label>
-                                    <select id="productStockStatus">
-                                        <option value="InStock">In stock</option>
-                                        <option value="OutOfStock">Out of Stock</option>
+                                    <label for="productStockStatus">Stock Status*</label>
+                                    <select id="productStockStatus" required>
+                                        <option value="1">In stock</option>
+                                        <option value="0">Out of Stock</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="productImage">Product Image</label>
-                                <input type="file" id="productImage">
+                            <!-- Single Image Upload -->
+                            <div class="upload-section">
+                                <label for="productThumbnail">Thumbnail Image *</label>
+                                <div class="upload-container" id="single-upload-container">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <div class="upload-text">
+                                        <h3>Drag & Drop</h3>
+                                        <p>Your main product image here or</p>
+                                    </div>
+                                    <div class="upload-btn" id="single-upload-btn">Browse Files</div>
+                                    <input type="file" id="single-upload-input" class="file-input" accept="image/*">
+                                    <div class="upload-hint">Supports JPG, PNG, GIF - Max 1MB</div>
+                                </div>
+
+                                <div class="preview-container">
+                                    <label for="productThumbnail">Thumbnail preview</label>
+                                    <div class="preview-list" id="single-preview-list">
+                                        <!-- Single image preview will appear here -->
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="upload-box" id="uploadBox">
-                                <p>Click or Drop Images Here (Max 1MB each)</p>
-                                <input type="file" id="productImages" accept="image/*" multiple>
-                            </div>
+                            <!-- Multiple Image Upload -->
+                            <div class="upload-section">
+                                <label for="productImages">Product Images</label>
+                                <div class="upload-container" id="multiple-upload-container">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-images"></i>
+                                    </div>
+                                    <div class="upload-text">
+                                        <h3>Drag & Drop</h3>
+                                        <p>Your additional product images here or</p>
+                                    </div>
+                                    <div class="upload-btn" id="multiple-upload-btn">Browse Files</div>
+                                    <input type="file" id="multiple-upload-input" class="file-input" accept="image/*"
+                                        multiple>
+                                    <div class="upload-hint">Supports JPG, PNG, GIF - Max 1MB each</div>
+                                </div>
 
-                            <div class="preview" id="preview"></div>
+                                <div class="preview-container">
+                                    <label for="productImages">Images Preview</label>
+                                    <div class="preview-list" id="multiple-preview-list">
+                                        <!-- Multiple image previews will appear here -->
+                                    </div>
+                                </div>
+                            </div>
 
                             <button type="submit" class="btn btn-primary">Create Product</button>
                         </form>
@@ -254,33 +388,43 @@
 
 
                 <!-- Other sections would be defined here -->
-                <div class="content-section" id="orders">
+                <!-- <div class="content-section" id="orders">
                     <h2>Orders</h2>
                     <p>Manage and track customer orders.</p>
-                    <!-- Order content would go here -->
+
                 </div>
 
                 <div class="content-section" id="customers">
                     <h2>Customers</h2>
                     <p>View and manage your customer database.</p>
-                    <!-- Customer content would go here -->
+
                 </div>
 
                 <div class="content-section" id="analytics">
                     <h2>Analytics</h2>
                     <p>Analyze your store performance.</p>
-                    <!-- Analytics content would go here -->
-                </div>
+
+                </div> -->
 
                 <div class="content-section" id="settings">
                     <h2>Settings</h2>
                     <p>Configure your store settings.</p>
-                    <!-- Settings content would go here -->
+                    <div class="card">
+                        <form id="settingsForm" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="whatsappNumber">Whatsapp Number*</label>
+                                <input type="number" id="whatsappNumber" placeholder="Enter Whatsapp number" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <div id="notifyBox" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999; display:none;">
+        <div class="alert alert-info shadow" role="alert"></div>
+    </div>
     <script src="/assets/js/admin.js"></script>
     <script src="/assets/js/getProductsJson.js"></script>
 </body>

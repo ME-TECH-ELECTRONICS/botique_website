@@ -40,7 +40,6 @@ $(document).ready(async function () {
     if (product.mrp > product.price) {
         $("#productMRP").text(`${currency}${product.mrp.toLocaleString()}`).show();
     }
-    $("#productRating").html(`<i class="bi bi-star-fill"></i> ${product.rating}`);
     $("#productDescription").text(product.description);
 
     // Sizes
