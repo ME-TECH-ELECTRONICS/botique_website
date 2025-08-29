@@ -300,7 +300,7 @@ $(document).on("click", ".productEdit", function () {
 
     if (!product) {
         //TODO: Use notify instead of alert
-        alert(`Product not found! (id was ${id})`);
+        notify("Product not found", "danger");
         return;
     }
 
@@ -422,6 +422,8 @@ function sortSizes() {
 
 function getSizes(product) {
     sizes = [...new Set(products.flatMap(product => product.sizes))];
+    const standardSizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "Free Size"];
+    sizes =  [...new Set([...sizes, ...standardSizes])];
     sortSizes();
 }
 
@@ -462,7 +464,7 @@ function addNewSizes() {
 
     if (rawValue === "") {
         //TODO: USe notify instead of alert
-        alert("Please enter at least one size.");
+        notifyt("Please enter at least one size.", "danger");
         return;
     }
 
@@ -479,36 +481,6 @@ function addNewSizes() {
     renderSizesPanel();
 }
 
-
-// Create product function
-//TODO: accept the form form cretae product section and extract data from it and then call this function
-async function createProduct(product) {
-    try {
-        const response = await fetch("create_product.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(product)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            console.log("✅ Product created:", result.message, "New ID:", result.id);
-            alert("Product created successfully! ID: " + result.id);
-            // Optionally refresh UI
-        } else {
-            console.error("❌ Create failed:", result.message);
-            alert("Create failed: " + result.message);
-        }
-    } catch (err) {
-        console.error("⚠️ Error creating product:", err);
-        alert("Error creating product");
-    }
-}
-
-// Edit product function
 //TODO: accept the form form edit modal and extract data from it and then call this function
 async function editProduct(product) {
     try {

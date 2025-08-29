@@ -10,156 +10,266 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Get product name from form data
-$productName = isset($_POST['title']) ? $_POST['title'] : 'product';
-$sanitizedProductName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $productName);
-
-// Define allowed file types and maximum size
-$allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-$maxFileSize = 1048576; // 1MB in bytes
-$uploadDir = '../assets/img/';
-
-if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+enum ActionType: string
+{
+    case Create = 'create';
+    case Edit = 'edit';
+    case Delete = 'delete';
+    case NoAction = 'no_action';
 }
 
-$uploadedFiles = [];
-$errors = [];
-$thumbnailPath = "";
-$imagePaths = [];
+//get action type
+$actionTypeStr = $_POST['action_type'] ?? ActionType::NoAction->value;
 
-// -------------------------
-// Process Thumbnail
-// -------------------------
-if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
-    $file = $_FILES['thumbnail'];
-    $fileName = $file['name'];
-    $fileSize = $file['size'];
-    $fileType = $file['type'];
-
-    if (!in_array($fileType, $allowedTypes)) {
-        $errors[] = "Thumbnail $fileName is not an allowed image type";
-    } elseif ($fileSize > $maxFileSize) {
-        $errors[] = "Thumbnail $fileName exceeds the 1MB size limit";
-    } else {
-        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-        $newFileName = $sanitizedProductName . '_thumbnail.' . $fileExtension;
-        $destination = $uploadDir . $newFileName;
-
-        if (move_uploaded_file($file['tmp_name'], $destination)) {
-            $thumbnailPath = $destination;
-            $uploadedFiles[] = [
-                'originalName' => $fileName,
-                'savedName' => $newFileName,
-                'path' => $destination,
-                'type' => 'thumbnail'
-            ];
-        } else {
-            $errors[] = "Failed to move uploaded thumbnail $fileName";
-        }
-    }
-} else {
-    $errors[] = "No thumbnail image uploaded";
+if ($actionTypeStr === ActionType::NoAction->value) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'No action type provided']);
+    exit;
 }
 
-// -------------------------
-// Process Additional Images
-// -------------------------
-if (isset($_FILES['images']) && count($_FILES['images']['tmp_name']) > 0) {
-    $imageCount = 1;
-    foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
-        if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
-            $fileName = $_FILES['images']['name'][$key];
-            $fileSize = $_FILES['images']['size'][$key];
-            $fileType = $_FILES['images']['type'][$key];
-
-            if (!in_array($fileType, $allowedTypes)) {
-                $errors[] = "File $fileName is not an allowed image type";
-                continue;
+//switch based on $actionTypeStr 
+switch ($actionTypeStr) {
+    case ActionType::Create->value: {
+            if (!isset($_POST['title']) && !isset($_POST['description']) && !isset($_POST['price']) && !isset($_POST['mrp']) && !isset($_POST['category']) && !isset($_POST['stockStatus']) && !isset($_POST['sizes'])) {
+                exit();
             }
-            if ($fileSize > $maxFileSize) {
-                $errors[] = "File $fileName exceeds the 1MB size limit";
-                continue;
+            // Get product name from form data
+            $productName = $_POST['title'];
+            $sanitizedProductName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $productName);
+
+            // Define allowed file types and maximum size
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $maxFileSize = 1048576; // 1MB in bytes
+            $uploadDir = '../assets/img/';
+
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
             }
 
-            $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $newFileName = $sanitizedProductName . '_img_' . $imageCount . '.' . $fileExtension;
-            $destination = $uploadDir . $newFileName;
+            $uploadedFiles = [];
+            $errors = [];
+            $thumbnailPath = "";
+            $imagePaths = [];
 
-            if (move_uploaded_file($tmpName, $destination)) {
-                $imagePaths[] = $destination;
-                $uploadedFiles[] = [
-                    'originalName' => $fileName,
-                    'savedName' => $newFileName,
-                    'path' => $destination,
-                    'type' => 'image'
-                ];
-                $imageCount++;
+            // -------------------------
+            // Process Thumbnail
+            // -------------------------
+            if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['thumbnail'];
+                $fileName = $file['name'];
+                $fileSize = $file['size'];
+                $fileType = $file['type'];
+
+                if (!in_array($fileType, $allowedTypes)) {
+                    $errors[] = "Thumbnail $fileName is not an allowed image type";
+                } elseif ($fileSize > $maxFileSize) {
+                    $errors[] = "Thumbnail $fileName exceeds the 1MB size limit";
+                } else {
+                    $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+                    $newFileName = $sanitizedProductName . '_thumbnail.' . $fileExtension;
+                    $destination = $uploadDir . $newFileName;
+
+                    if (move_uploaded_file($file['tmp_name'], $destination)) {
+                        $thumbnailPath = $destination;
+                        $uploadedFiles[] = [
+                            'originalName' => $fileName,
+                            'savedName' => $newFileName,
+                            'path' => $destination,
+                            'type' => 'thumbnail'
+                        ];
+                    } else {
+                        $errors[] = "Failed to move uploaded thumbnail $fileName";
+                    }
+                }
             } else {
-                $errors[] = "Failed to move uploaded file $fileName";
+                $errors[] = "No thumbnail image uploaded";
             }
-        }
-    }
-}
 
-// -------------------------
-// Collect Product Data
-// -------------------------
-$productData = [
-    'title' => $productName,
-    'description' => $_POST['description'] ?? '',
-    'price' => $_POST['price'] ?? 0,
-    'mrp' => $_POST['mrp'] ?? 0,
-    'category' => ($_POST['category'] === 'other') ? ($_POST['newCategory'] ?? 'Other') : $_POST['category'],
-    'stockStatus' => $_POST['stockStatus'] ?? 'InStock',
-    'sizes' => isset($_POST['sizes']) ? explode(',', $_POST['sizes']) : []
-];
+            // -------------------------
+            // Process Additional Images
+            // -------------------------
+            if (isset($_FILES['images']) && count($_FILES['images']['tmp_name']) > 0) {
+                $imageCount = 1;
+                foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
+                    if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
+                        $fileName = $_FILES['images']['name'][$key];
+                        $fileSize = $_FILES['images']['size'][$key];
+                        $fileType = $_FILES['images']['type'][$key];
 
-// -------------------------
-// Insert into DB if no errors
-// -------------------------
-if (count($errors) === 0) {
-    $stmt = $conn->prepare("INSERT INTO products 
+                        if (!in_array($fileType, $allowedTypes)) {
+                            $errors[] = "File $fileName is not an allowed image type";
+                            continue;
+                        }
+                        if ($fileSize > $maxFileSize) {
+                            $errors[] = "File $fileName exceeds the 1MB size limit";
+                            continue;
+                        }
+
+                        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+                        $newFileName = $sanitizedProductName . '_img_' . $imageCount . '.' . $fileExtension;
+                        $destination = $uploadDir . $newFileName;
+
+                        if (move_uploaded_file($tmpName, $destination)) {
+                            $imagePaths[] = $destination;
+                            $uploadedFiles[] = [
+                                'originalName' => $fileName,
+                                'savedName' => $newFileName,
+                                'path' => $destination,
+                                'type' => 'image'
+                            ];
+                            $imageCount++;
+                        } else {
+                            $errors[] = "Failed to move uploaded file $fileName";
+                        }
+                    }
+                }
+            }
+
+            // -------------------------
+            // Collect Product Data
+            // -------------------------
+            $productData = [
+                'title' => $productName,
+                'description' => $_POST['description'] ?? '',
+                'price' => $_POST['price'] ?? 0,
+                'mrp' => $_POST['mrp'] ?? 0,
+                'category' => ($_POST['category'] === 'other') ? ($_POST['newCategory'] ?? 'Other') : $_POST['category'],
+                'stockStatus' => $_POST['stockStatus'] ?? 'InStock',
+                'sizes' => isset($_POST['sizes']) ? explode(',', $_POST['sizes']) : []
+            ];
+
+            // -------------------------
+            // Insert into DB if no errors
+            // -------------------------
+            if (count($errors) === 0) {
+                $stmt = $conn->prepare("INSERT INTO products 
         (title, price, mrp, stock, category, sizes, thumbnail, images, description) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-    $sizesStr = implode(',', $productData['sizes']);
-    $imagesStr = implode(',', $imagePaths); // store paths as CSV
+                $sizesStr = implode(',', $productData['sizes']);
+                $imagesStr = implode(',', $imagePaths); // store paths as CSV
 
-    $stmt->bind_param(
-        "sdddsssss",
-        $productData['title'],
-        $productData['price'],
-        $productData['mrp'],
-        $productData['stockStatus'],
-        $productData['category'],
-        $sizesStr,
-        $thumbnailPath,
-        $imagesStr,
-        $productData['description']
-    );
+                $stmt->bind_param(
+                    "sddisssss",
+                    $productData['title'],
+                    $productData['price'],
+                    $productData['mrp'],
+                    $productData['stockStatus'],
+                    $productData['category'],
+                    $sizesStr,
+                    $thumbnailPath,
+                    $imagesStr,
+                    $productData['description']
+                );
 
-    if ($stmt->execute()) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Product created successfully',
-            'productId' => $stmt->insert_id,
-            // 'product' => $productData,
-            // 'uploadedFiles' => $uploadedFiles
-        ]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'DB insert failed: ' . $stmt->error]);
-    }
-    $stmt->close();
-} else {
-    echo json_encode([
-        'success' => true,
-        'message' => 'Product created but some files had errors',
-        'product' => $productData,
-        'uploadedFiles' => $uploadedFiles,
-        'errors' => $errors
-    ]);
+                if ($stmt->execute()) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Product created successfully',
+                        'productId' => $stmt->insert_id,
+                        // 'product' => $productData,
+                        // 'uploadedFiles' => $uploadedFiles
+                    ]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'DB insert failed: ' . $stmt->error]);
+                }
+                $stmt->close();
+            } else {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Product created but some files had errors',
+                    'product' => $productData,
+                    'uploadedFiles' => $uploadedFiles,
+                    'errors' => $errors
+                ]);
+            }
+
+            $conn->close();
+            exit;
+        }
+    case ActionType::Edit->value: {
+            if (!isset($_POST['id']) && !isset($_POST['title']) && !isset($_POST['description']) && !isset($_POST['price']) && !isset($_POST['mrp']) && !isset($_POST['category']) && !isset($_POST['stockStatus']) && !isset($_POST['sizes'])) {
+                exit();
+            }
+
+            // Get product name from form data
+            $productId = isset($_POST['id']);
+            $productName = isset($_POST['title']);
+            $sanitizedProductName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $productName);
+
+            // -------------------------
+            // Collect Product Data
+            // ------------------------
+            $productData = [
+                'title' => $productName,
+                'description' => $_POST['description'] ?? '',
+                'price' => $_POST['price'] ?? 0,
+                'mrp' => $_POST['mrp'] ?? 0,
+                'category' => ($_POST['category'] === 'other') ? ($_POST['newCategory'] ?? 'Other') : $_POST['category'],
+                'stockStatus' => $_POST['stockStatus'] ?? 'InStock',
+                'sizes' => isset($_POST['sizes']) ? explode(',', $_POST['sizes']) : []
+            ];
+
+            // -------------------------
+            // Insert into DB if no errors
+            // -------------------------
+
+            $stmt = $conn->prepare("UPDATE products 
+        SET title = ?, price = ?, mrp = ?, stock = ?, category = ?, sizes = ?, description = ?
+        WHERE id = ?");
+
+            $sizesStr = implode(',', $productData['sizes']);
+            $stmt->bind_param(
+                "sddisssi",
+                $productData['title'],
+                $productData['price'],
+                $productData['mrp'],
+                $productData['stockStatus'],
+                $productData['category'],
+                $sizesStr,
+                $productData['description'],
+                $productId
+            );
+            if ($stmt->execute()) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Product updated successfully',
+                    'productId' => $productId
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'DB update failed: ' . $stmt->error]);
+            }
+
+            $stmt->close();
+            $conn->close();
+            exit;
+        }
+    case ActionType::Delete->value: {
+
+            //delete product with id id from sql
+            $id = $_POST['id'] ?? null;
+            if ($id === null) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'No id provided']);
+                exit;
+            }
+
+            $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true, 'message' => 'Product deleted successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to delete product']);
+            }
+            $conn->close();
+            exit;
+        }
+    default: {
+            //invalid action type
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid action type']);
+            $conn->close();
+            exit;
+        }
+        break;
 }
-
-$conn->close();
-?>
