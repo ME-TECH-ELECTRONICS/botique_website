@@ -17,7 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["username"]) && isset($
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-
     if ($row && password_verify($password, $row['password'])) {
         $_SESSION["admin_logged_in"] = true;
         $_SESSION["username"] = $username;

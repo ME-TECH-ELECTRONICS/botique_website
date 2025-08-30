@@ -43,7 +43,12 @@ function openSizeModal(product) {
   });
 }
 
-$("#chatLink").attr('href', `https://wa.me/${waNumber}?text=Hi`)
+fetch("/admin/settings.php")
+  .then(response => response.json())
+  .then(data => {
+    $("#chatLink").attr('href', `https://wa.me/${data.whatsappNumber}?text=Hi`);
+  });
+
 function setProductCategories() {
   const select = $("#categoryFilter");
   if (!select.length) return;
@@ -91,7 +96,7 @@ function buildCards() {
           <div class="out-of-stock-overlay">Out of Stock</div>
         </a>`;
 
-      const addCartButtonHtmlString =  p.stock? `<button class="btn btn-dark btn-sm flex-fill addBtn" data-id="${p.id}"><i class="bi bi-bag-plus"></i> Add</button>`:`<button class="btn btn-dark btn-sm flex-fill addBtn disabled" data-id="${p.id}"><i class="bi bi-bag-plus" disabled></i> Add</button>`;
+      const addCartButtonHtmlString =  p.stock? `<button class="btn btn-primary btn-dark btn-sm flex-fill addBtn" data-id="${p.id}"><i class="bi bi-bag-plus"></i> Add</button>`:`<button class="btn btn-primary disabled btn-dark btn-sm flex-fill addBtn " data-id="${p.id}"><i class="bi bi-bag-plus" disabled></i> Add</button>`;
     const col = $("<div>").addClass("col-6 col-md-4 col-lg-3").html(`
       <div class="card h-100 border-0 shadow-sm">
         ${productImageHtmlString}

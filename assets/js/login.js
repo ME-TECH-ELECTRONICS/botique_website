@@ -47,7 +47,7 @@ $(document).ready(function () {
                 url: 'login.php',
                 method: 'POST',
                 dataType: 'json',
-                data: { username: em, password: p },
+                data: { username: em, password: p, captcha: captchaResponse },
                 success: function (response) {
                     if (response.success) {
                         $('#successMessage').text('Login successful!').addClass('success').removeClass('error').fadeIn();

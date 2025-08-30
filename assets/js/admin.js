@@ -32,7 +32,7 @@ $(document).ready(async function () {
         $fileInput.trigger("click");
     });
 
-    $("#settingsForm").on('submit', function (e) {
+    $("#settingsForm").on('submit', function (e) { 
         e.preventDefault();
 
         const whatsappNumber = $("#whatsappNumber").val();

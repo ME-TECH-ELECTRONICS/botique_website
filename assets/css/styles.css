@@ -93,10 +93,16 @@ body {
   text-transform: uppercase;
 }
 
-
+/* 
 .btn.disabled, 
 .btn:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed !important;
-  pointer-events: none !important;
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+} */
+
+.addBtn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none; 
 }
