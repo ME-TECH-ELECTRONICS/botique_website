@@ -1,16 +1,7 @@
 <?php
 // Prevent browser from caching the JSON
 header("Content-Type: application/json");
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Pragma: no-cache");
-
-// Database connection
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "testshop";
-
-$conn = new mysqli($host, $user, $pass, $db);
+require_once "config.php";
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
