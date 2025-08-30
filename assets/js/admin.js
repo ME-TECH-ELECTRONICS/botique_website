@@ -96,7 +96,7 @@ $(document).ready(async function () {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('price', price);
-        formData.append('mrp', mrp);
+        formData.append('mrp', mrp)
         formData.append('category', category);
         formData.append('stockStatus', stockStatus);
         formData.append('sizes', sizes.join(','));
@@ -107,11 +107,12 @@ $(document).ready(async function () {
             url: 'actions.php',
             type: 'POST',
             data: formData,
+            dataType: 'json',
             processData: false,
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    console.log(response.message, response)
+
                     notify(`this is message:${response.message}`, "success")
                     // Reset form
                     $('#createProductForm')[0].reset();
@@ -266,12 +267,12 @@ function renderTable() {
 }
 
 
-async function reloadPRoductsAndRender() {
-    await getProducts();
-    renderTable();
-    renderCategorySelector();
-    getSizes();
-    renderSizesPanel();
+async function reloadProductsAndRender() {
+    await getProducts(true);
+    await renderTable();
+    await renderCategorySelector();
+    await getSizes();
+    await renderSizesPanel();
 }
 
 function converIntToStockStatus(stock) {
@@ -281,41 +282,46 @@ function converIntToStockStatus(stock) {
 
 function convertStockStatusStringToBool(stockStatus) {
     if (stockStatus === "InStock") return true;
-    if (stockStatus === "OutOfStock") return false;
-
+    else if (stockStatus === "OutOfStock") return false;
+    else { return false; }
 }
 
 $(document).on("click", ".productDelete", function () {
-    //ask confirmation. say ut cannot be undone
-    if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
-        return;
-    }
     //get id from data-id attribute
     const id = $(this).data("id");
     if (!id) {
         notify("No product ID found", "danger");
         return;
     }
-    $.ajax({
-        url: "/admin/actions.php",
-        method: "POST",
-        data: {
-            action_type: "delete",
-            id: id
-        },
-        success: function (response) {
-            if (response.success) {
-                notify(response.message, "success");
-            } else {
-                notify(response.message, "danger");
-            }
-        },
-        error: function () {
-            notify("An error occurred while deleting the product", "danger");
-        }
-    });
 
-    reloadProductsAndRender();
+    // Set up the confirmation modal
+    $('#confirmationModal').modal('show');
+
+    $('#confirmDeleteBtn').off('click').on('click', function () {
+         // Close the modal
+        $('#confirmationModal').modal('hide');
+        $.ajax({
+            url: "/admin/actions.php",
+            method: "POST",
+            dataType: 'json',
+            data: {
+                action_type: "delete",
+                id: id
+            },
+            success: function (response) {
+                if (response.success) {
+                    notify(response.message, "success");
+                } else {
+                    notify(response.message, "danger");
+                }
+            },
+            error: function () {
+                notify("An error occurred while deleting the product", "danger");
+            }
+        });
+
+        reloadProductsAndRender();
+    });
 });
 
 $(document).on("click", ".productEdit", function () {
@@ -353,7 +359,6 @@ $(document).on("click", ".productEdit", function () {
 });
 
 function toggleNewCategoryInputEditSection() {
-    console.log("toggling new category input in edit section");
     const category = $("#editProductCategory").val();
     const newCategoryGroup = $("#newCategoryGroupEdit");
 
@@ -396,7 +401,7 @@ function toggleNewCategoryInput() {
 }
 
 function renderEditSizePanel(currentSizes) {
-    const sizesPanel = $("#eidtSizesPanel").empty();
+    const sizesPanel = $("#editSizesPanel").empty();
     sizes.forEach(size => {
 
         const input = $(` <input type="checkbox" id="size${size}" name="sizes" value="${size}" hidden>`);
@@ -446,6 +451,7 @@ function sortSizes() {
     });
 }
 
+let sizes = [];
 function getSizes(product) {
     sizes = [...new Set(products.flatMap(product => product.sizes))];
     const standardSizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "Free Size"];
@@ -463,7 +469,6 @@ function renderSizesPanel() {
         sizesPanel.append(input);
         sizesPanel.append(label);
     });
-
 }
 
 function addNewSizes() {
@@ -584,16 +589,16 @@ $("#editProductForm").on("submit", function (e) {
     const stockStatusBool = convertStockStatusStringToBool($("#productStockStatus").val());
 
     // Add selected sizes to form data
-    const sizes = [];
+    const sizes1 = [];
     $('#editSizesPanel input[type="checkbox"]:checked').each(function () {
-        sizes.push($(this).val());
+        sizes1.push($(this).val());
 
     });
     const productData = {
-        id: parseInt(("#editProductForm").data("product-id")), // set when oping modal
+        id: parseInt($("#editProductForm").data("id")), // set when oping modal
         name: $("#editProductName").val(),
         description: $("#editProductDescription").val(),
-        sizes: sizes,
+        sizes: sizes1,
         price: parseFloat($("#editProductPrice").val()) || 0,
         mrp: parseFloat($("#editProductMRP").val()) || 0,
         category: ($("#editProductCategory").val() === "new") ? $("#newCategoryEdit").val() : $("#editProductCategory").val(),
@@ -602,14 +607,16 @@ $("#editProductForm").on("submit", function (e) {
     };
 
 
+
     // Call your backend function hello...
     $.ajax({
         url: "/admin/actions.php",
         method: "POST",
         data: productData,
+        dataType: 'json',
         success: function (response) {
             if (response.success) {
-                notify(response.message);
+                notify(response.message, "success");
                 $("#editProductModal").modal("hide");
                 reloadProductsAndRender();
             } else {
@@ -625,17 +632,15 @@ $("#editProductForm").on("submit", function (e) {
 
 });
 
-function notify(msg, type = "info", timeout = 3000) {
-    const box = $("#notifyBox");
-    const notify = box.find(".notify");
-
-    notify.removeClass()
-        .addClass(`notify notify-${type} shadow`)
-        .html(msg);
-
-    box.stop(true, true).fadeIn(200);
-
+function notify(message, type = "info", timeout = 3000) {
+    var $toast = $('#myToast');
+    console.log(type);
+    $toast.removeClass('toast-success toast-danger toast-info');
+    $toast.addClass(`toast-${type}`);
+    $toast.find('.toast-body').text(message);
+    var toast = new bootstrap.Toast($toast[0]);
+    toast.show();
     setTimeout(() => {
-        box.fadeOut(400);
+        toast.hide();
     }, timeout);
 }

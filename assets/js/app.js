@@ -1,5 +1,3 @@
-const waNumber = +919447393193; // change to your WhatsApp number
-
 let selectedProduct = null;
 let selectedSize = null;
 
@@ -12,7 +10,7 @@ function openSizeModal(product) {
   modalSizes.empty();
 
   if (!product.sizes || product.sizes.length === 0) {
-    alert("error!!! no sizes available for this product");
+    notify("error!!! no sizes available for this product", "danger");
     return;
   }
 
@@ -34,7 +32,7 @@ function openSizeModal(product) {
 
   $("#modalAddBtn").off("click").on("click", function () {
     if (!selectedSize) {
-      alert("Please select a size!");
+      notify("Please select a size!");
       return;
     }
     addToCart(product.id, selectedSize, 1);
@@ -43,7 +41,12 @@ function openSizeModal(product) {
   });
 }
 
-$("#chatLink").attr('href', `https://wa.me/${waNumber}?text=Hi`)
+fetch("/admin/settings.php")
+  .then(response => response.json())
+  .then(data => {
+    $("#chatLink").attr('href', `https://wa.me/${data.whatsappNumber}?text=Hi`);
+  });
+
 function setProductCategories() {
   const select = $("#categoryFilter");
   if (!select.length) return;
@@ -83,11 +86,18 @@ function buildCards() {
 
   list.forEach(p => {
     const off = p.mrp > p.price ? Math.round(100 * (p.mrp - p.price) / p.mrp) : 0;
+    
+    const productImageHtmlString = p.stock? `<a href="product.html?id=${encodeURIComponent(p.id)}" class="ratio ratio-1x1 rounded-4 overflow-hidden bg-light">
+          <img src="${p.thumbnail}" class="object-fit-cover" alt="${p.title}">
+        </a>`:`<a href="product.html?id=${encodeURIComponent(p.id)}" class="ratio ratio-1x1 rounded-4 overflow-hidden bg-light">
+          <img src="${p.thumbnail}" class="object-fit-cover out-of-stock-img" alt="${p.title}">
+          <div class="out-of-stock-overlay">Out of Stock</div>
+        </a>`;
+
+      const addCartButtonHtmlString =  p.stock? `<button class="btn btn-primary btn-dark btn-sm flex-fill addBtn" data-id="${p.id}"><i class="bi bi-bag-plus"></i> Add</button>`:`<button class="btn btn-primary disabled btn-dark btn-sm flex-fill addBtn " data-id="${p.id}"><i class="bi bi-bag-plus" disabled></i> Add</button>`;
     const col = $("<div>").addClass("col-6 col-md-4 col-lg-3").html(`
       <div class="card h-100 border-0 shadow-sm">
-        <a href="product.html?id=${encodeURIComponent(p.id)}" class="ratio ratio-1x1 rounded-4 overflow-hidden bg-light">
-          <img src="${p.thumbnail}" class="object-fit-cover" alt="${p.title}">
-        </a>
+        ${productImageHtmlString}
         <div class="card-body p-2">
           <div class="small text-muted">${p.category}</div>
           <h3 class="h6 m-0 text-truncate" title="${p.title}">${p.title}</h3>
@@ -98,7 +108,7 @@ function buildCards() {
           </div>
           
           <div class="d-flex gap-2 mt-2">
-            <button class="btn btn-dark btn-sm flex-fill addBtn" data-id="${p.id}"><i class="bi bi-bag-plus"></i> Add</button>
+            ${addCartButtonHtmlString}
             <a class="btn btn-outline-dark btn-sm" href="product.html?id=${encodeURIComponent(p.id)}">View</a>
           </div>
         </div>
@@ -113,7 +123,7 @@ function buildCards() {
     if (product) {
       openSizeModal(product);
     } else {
-      alert("Product not found!");
+      notify("Product not found!");
     }
   });
 }

@@ -63,8 +63,12 @@
       </div>
     </div>
   </main>
-  <div id="notifyBox" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999; display:none;">
-    <div class="alert alert-info shadow" role="alert"></div>
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div id="myToast" class="toast text-white border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">Default message</div>
+      </div>
+    </div>
   </div>
   <script src="assets/js/getProductsJson.js"></script>
   <script src="assets/js/product.js"></script>
