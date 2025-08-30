@@ -1,5 +1,3 @@
-const waNumber = +919447393193; // change to your WhatsApp number
-
 let selectedProduct = null;
 let selectedSize = null;
 
@@ -12,7 +10,7 @@ function openSizeModal(product) {
   modalSizes.empty();
 
   if (!product.sizes || product.sizes.length === 0) {
-    alert("error!!! no sizes available for this product");
+    notify("error!!! no sizes available for this product", "danger");
     return;
   }
 
@@ -34,7 +32,7 @@ function openSizeModal(product) {
 
   $("#modalAddBtn").off("click").on("click", function () {
     if (!selectedSize) {
-      alert("Please select a size!");
+      notify("Please select a size!");
       return;
     }
     addToCart(product.id, selectedSize, 1);
@@ -125,7 +123,7 @@ function buildCards() {
     if (product) {
       openSizeModal(product);
     } else {
-      alert("Product not found!");
+      notify("Product not found!");
     }
   });
 }

@@ -511,8 +511,8 @@ input[type="checkbox"]:checked+.size-pill::before {
     color: #000;
 }
 
-.toast-error {
-    background-color: #f38590 !important;
+.toast-danger {
+    background-color: #f37784 !important;
     color: #fff;
 }
 

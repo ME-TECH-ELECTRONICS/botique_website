@@ -1,9 +1,9 @@
-<?php 
-    session_start();
-    if (!isset($_SESSION["admin_logged_in"])) {
-        header("Location: login.html");
-        exit();
-    }
+<?php
+session_start();
+if (!isset($_SESSION["admin_logged_in"])) {
+    header("Location: login.html");
+    exit();
+}
 
 ?>
 
@@ -79,6 +79,24 @@
                 <div class="content-section" id="products">
                     <h2>Products</h2>
                     <p>Manage your dress collection.</p>
+                    <!-- Custom Confirmation Modal -->
+                    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to perform this action? This cannot be undone.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="table-container" id="productsTableContainer">
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
@@ -110,7 +128,7 @@
                                     <div class="modal-body">
                                         <div class="form-group mb-3">
                                             <label for="editProductName">Product Name</label>
-                                            <input type="text" class="form-control" id="editProductName">
+                                            <input type="text" class="form-control" id="editProductName" required>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label for="editProductDescription">Description</label>
@@ -320,12 +338,12 @@
         </div>
     </div>
     <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
-    <div id="myToast" class="toast text-white border-0" role="alert">
-      <div class="d-flex">
-        <div class="toast-body">Default message</div>
-      </div>
+        <div id="myToast" class="toast border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">Default message</div>
+            </div>
+        </div>
     </div>
-  </div>
     <script src="/assets/js/getProductsJson.js"></script>
     <script src="/assets/js/admin.js"></script>
 </body>
