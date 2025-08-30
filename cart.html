@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,72 +10,78 @@
   <link href="assets/css/styles.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
-<nav class="navbar navbar-expand-lg bg-body sticky-top border-bottom">
-  <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
-      <img src="assets/img/logo.jpg" width="28" height="28" alt="Logo"> Luttu's Fashion
-    </a>
-  </div>
-</nav>
 
-<main class="container py-4">
-  <h1 class="h4 mb-3">Your Cart</h1>
-  <div class="row g-4">
-    <div class="col-12 col-lg-8">
-      <div class="card rounded-4 shadow-sm">
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table align-middle m-0">
-              <thead class="table-light">
-                <tr>
-                  <th>Product</th>
-                  <th class="text-center">Price</th>
-                  <th class="text-center">Qty</th>
-                  <th class="text-end pe-3">Subtotal</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="cartTableBody"></tbody>
-            </table>
+<body>
+  <nav class="navbar navbar-expand-lg bg-body sticky-top border-bottom">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+        <img src="assets/img/logo.jpg" width="28" height="28" alt="Logo"> Luttu's Fashion
+      </a>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <h1 class="h4 mb-3">Your Cart</h1>
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <div class="card rounded-4 shadow-sm">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table align-middle m-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end pe-3">Subtotal</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="cartTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="card rounded-4 shadow-sm">
+          <div class="card-body">
+            <h2 class="h6">Order Summary</h2>
+            <div class="d-flex justify-content-between"><span>Items</span><span id="sumItems">0</span></div>
+            <div class="d-flex justify-content-between"><span>Total</span><strong id="sumTotal">₹0</strong></div>
+            <hr>
+            <form id="checkoutForm" class="vstack gap-2">
+              <input class="form-control" name="name" placeholder="Your Name" required>
+              <input class="form-control" name="phone" placeholder="Phone (optional)">
+              <input class="form-control" name="address" placeholder="Pickup address / landmark (optional)">
+              <input class="form-control" name="pickup" placeholder="Preferred pickup date & time (optional)">
+              <textarea class="form-control" name="notes" placeholder="Any notes (optional)"></textarea>
+              <button type="submit" class="btn btn-success w-100">
+                <i class="bi bi-whatsapp"></i> Place Order on WhatsApp
+              </button>
+            </form>
+            <p class="small text-muted mt-2">You will be redirected to WhatsApp with your order details. Payment is
+              handled outside the site.</p>
           </div>
         </div>
       </div>
     </div>
-    <div class="col-12 col-lg-4">
-      <div class="card rounded-4 shadow-sm">
-        <div class="card-body">
-          <h2 class="h6">Order Summary</h2>
-          <div class="d-flex justify-content-between"><span>Items</span><span id="sumItems">0</span></div>
-          <div class="d-flex justify-content-between"><span>Total</span><strong id="sumTotal">₹0</strong></div>
-          <hr>
-          <form id="checkoutForm" class="vstack gap-2">
-            <input class="form-control" name="name" placeholder="Your Name" required>
-            <input class="form-control" name="phone" placeholder="Phone (optional)" >
-            <input class="form-control" name="address" placeholder="Pickup address / landmark (optional)">
-            <input class="form-control" name="pickup" placeholder="Preferred pickup date & time (optional)">
-            <textarea class="form-control" name="notes" placeholder="Any notes (optional)"></textarea>
-            <button type="submit" class="btn btn-success w-100">
-              <i class="bi bi-whatsapp"></i> Place Order on WhatsApp
-            </button>
-          </form>
-          <p class="small text-muted mt-2">You will be redirected to WhatsApp with your order details. Payment is handled outside the site.</p>
-        </div>
+  </main>
+
+  <!-- Notification container (top-right) -->
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div id="myToast" class="toast text-white border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">Default message</div>
       </div>
     </div>
   </div>
-</main>
 
-<!-- Notification container (top-right) -->
-<div id="notifyBox" 
-     style="position: fixed; top: 1rem; right: 1rem; z-index: 9999; display:none;">
-  <div class="alert alert-info shadow" role="alert"></div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/cartUtils.js"></script>
-<script src="assets/js/cart.js"></script>
-<script src="assets/js/getProductsJson.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/cartUtils.js"></script>
+  <script src="assets/js/cart.js"></script>
+  <script src="assets/js/getProductsJson.js"></script>
 
 </body>
+
 </html>

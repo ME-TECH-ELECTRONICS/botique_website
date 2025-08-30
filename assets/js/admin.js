@@ -283,7 +283,7 @@ function convertStockStatusStringToBool(stockStatus) {
     console.log(`Converting ${stockStatus} to boolean`);
     if (stockStatus === "InStock") return true;
     else if (stockStatus === "OutOfStock") return false;
-    else {console.log("Invalid stock status"); return false;}
+    else { console.log("Invalid stock status"); return false; }
 }
 
 $(document).on("click", ".productDelete", function () {
@@ -627,17 +627,14 @@ $("#editProductForm").on("submit", function (e) {
 
 });
 
-function notify(msg, type = "info", timeout = 3000) {
-    const box = $("#notifyBox");
-        const notify = box.find(".alert");
-
-    notify.removeClass()
-        .addClass(`notify notify-${type} shadow`)
-        .html(msg);
-
-    box.stop(true, true).fadeIn(200);
-
+function notify(message, type = "info", timeout = 3000) {
+    var $toast = $('#myToast');
+    $toast.removeClass('toast-success toast-error toast-info');
+    $toast.addClass(`toast-${type}`);
+    $toast.find('.toast-body').text(message);
+    var toast = new bootstrap.Toast($toast[0]);
+    toast.show();
     setTimeout(() => {
-        box.fadeOut(400);
+        toast.hide();
     }, timeout);
 }

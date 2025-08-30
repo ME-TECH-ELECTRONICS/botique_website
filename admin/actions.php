@@ -221,7 +221,7 @@ switch ($actionTypeStr) {
                 'mrp' => $_POST['mrp'] ?? 0,
                 'category' => ($_POST['category'] === 'other') ? ($_POST['newCategory'] ?? 'Other') : $_POST['category'],
                 'stockStatus' => $_POST['stockStatus'] ?? 'InStock',
-                'sizes' => isset($_POST['sizes']) ? explode(',', $_POST['sizes']) : []
+                'sizes' => isset($_POST['sizes']) ? implode(',', $_POST['sizes']) : ""
             ];
 
             // -------------------------
@@ -232,7 +232,6 @@ switch ($actionTypeStr) {
         SET title = ?, price = ?, mrp = ?, stock = ?, category = ?, sizes = ?, description = ?
         WHERE id = ?");
 
-            $sizesStr = implode(',', $productData['sizes']);
             $stmt->bind_param(
                 "sddisssi",
                 $productData['title'],
@@ -240,7 +239,7 @@ switch ($actionTypeStr) {
                 $productData['mrp'],
                 $productData['stockStatus'],
                 $productData['category'],
-                $sizesStr,
+                $productData['sizes'],
                 $productData['description'],
                 $productId
             );

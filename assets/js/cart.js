@@ -1,16 +1,13 @@
 // Simple notification popup function
-function notify(msg, type="info", timeout=3000) {
-  const box = $("#notifyBox");
-  const alert = box.find(".alert");
-
-  alert.removeClass()
-       .addClass(`alert alert-${type} shadow`)
-       .html(msg);
-
-  box.stop(true, true).fadeIn(200);
-
+function notify(message, type = "info", timeout = 3000) {
+  var $toast = $('#myToast');
+  $toast.removeClass('toast-success toast-error toast-info');
+  $toast.addClass(`toast-${type}`);
+  $toast.find('.toast-body').text(message);
+  var toast = new bootstrap.Toast($toast[0]);
+  toast.show();
   setTimeout(() => {
-    box.fadeOut(400);
+    toast.hide();
   }, timeout);
 }
 
@@ -25,12 +22,12 @@ $(document).ready(async function () {
     notify("Processing your order...", "info");
 
     const fd = new FormData(this);
-    const name    = fd.get("name")?.toString().trim();
-    const phone   = fd.get("phone")?.toString().trim();
+    const name = fd.get("name")?.toString().trim();
+    const phone = fd.get("phone")?.toString().trim();
     const address = fd.get("address")?.toString().trim();
-    const pickup  = fd.get("pickup")?.toString().trim();
-    const notes   = fd.get("notes")?.toString().trim();
-    const cart    = readCart();
+    const pickup = fd.get("pickup")?.toString().trim();
+    const notes = fd.get("notes")?.toString().trim();
+    const cart = readCart();
 
     if (cart.length === 0) {
       notify("Your cart is empty.", "danger");
