@@ -280,9 +280,10 @@ function converIntToStockStatus(stock) {
 }
 
 function convertStockStatusStringToBool(stockStatus) {
+    console.log(`Converting ${stockStatus} to boolean`);
     if (stockStatus === "InStock") return true;
-    if (stockStatus === "OutOfStock") return false;
-
+    else if (stockStatus === "OutOfStock") return false;
+    else {console.log("Invalid stock status"); return false;}
 }
 
 $(document).on("click", ".productDelete", function () {
@@ -396,7 +397,7 @@ function toggleNewCategoryInput() {
 }
 
 function renderEditSizePanel(currentSizes) {
-    const sizesPanel = $("#eidtSizesPanel").empty();
+    const sizesPanel = $("#editSizesPanel").empty();
     sizes.forEach(size => {
 
         const input = $(` <input type="checkbox" id="size${size}" name="sizes" value="${size}" hidden>`);
@@ -590,7 +591,7 @@ $("#editProductForm").on("submit", function (e) {
 
     });
     const productData = {
-        id: parseInt(("#editProductForm").data("product-id")), // set when oping modal
+        id: parseInt($("#editProductForm").data("id")), // set when oping modal
         name: $("#editProductName").val(),
         description: $("#editProductDescription").val(),
         sizes: sizes,
@@ -600,6 +601,7 @@ $("#editProductForm").on("submit", function (e) {
         stockStatus: stockStatusBool,
         action_type: "edit"
     };
+
 
 
     // Call your backend function hello...
@@ -627,7 +629,7 @@ $("#editProductForm").on("submit", function (e) {
 
 function notify(msg, type = "info", timeout = 3000) {
     const box = $("#notifyBox");
-    const notify = box.find(".notify");
+        const notify = box.find(".alert");
 
     notify.removeClass()
         .addClass(`notify notify-${type} shadow`)

@@ -3,18 +3,14 @@ require_once '../config.php'; // fixed path (remove starting slash if same dir)
 // Set appropriate headers
 header('Content-Type: application/json');
 
-function productExists(mysqli $conn, int $id): bool
-{
-    $stmt = $conn->prepare("SELECT 1 FROM products WHERE id = ? LIMIT 1");
+function productExists(mysqli $conn, int $id): bool { 
+    $stmt = $conn->prepare("SELECT * FROM products WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->store_result();
-
     $exists = $stmt->num_rows > 0;
-
     $stmt->free_result();
     $stmt->close();
-
     return $exists;
 }
 
@@ -32,6 +28,7 @@ enum ActionType: string
     case NoAction = 'no_action';
 }
 
+// describeProducts($conn);
 //get action type
 $actionTypeStr = $_POST['action_type'] ?? ActionType::NoAction->value;
 
@@ -202,13 +199,13 @@ switch ($actionTypeStr) {
             exit;
         }
     case ActionType::Edit->value: {
-            if (!isset($_POST['id']) && !isset($_POST['title']) && !isset($_POST['description']) && !isset($_POST['price']) && !isset($_POST['mrp']) && !isset($_POST['category']) && !isset($_POST['stockStatus']) && !isset($_POST['sizes'])) {
+            if (!isset($_POST['id']) && !isset($_POST['name']) && !isset($_POST['description']) && !isset($_POST['price']) && !isset($_POST['mrp']) && !isset($_POST['category']) && !isset($_POST['stockStatus']) && !isset($_POST['sizes'])) {
                 exit();
             }
 
             // Get product name from form data
-            $productId = isset($_POST['id']);
-            $productName = isset($_POST['title']);
+            $productId = $_POST['id'];
+            $productName = $_POST['name'];
             $sanitizedProductName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $productName);
             if (!productExists($conn, $productId)) {
                 echo json_encode(['success' => false, 'message' => 'Product not found']);
@@ -268,8 +265,7 @@ switch ($actionTypeStr) {
             }
             $id = $_POST['id'];
 
-
-            if (!productExists($conn, $productId)) {
+            if (!productExists($conn, $id)) {
                 echo json_encode(['success' => false, 'message' => 'Product not found']);
                 exit();
             }
@@ -292,3 +288,4 @@ switch ($actionTypeStr) {
         }
         break;
 }
+?>
