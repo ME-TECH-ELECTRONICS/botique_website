@@ -1,6 +1,6 @@
 $(document).ready(async function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
+    const id = parseInt(urlParams.get("id"));
 
     await getProducts();
     updateCartBadge();
@@ -8,7 +8,7 @@ $(document).ready(async function () {
     const product = products.find(p => p.id === id);
 
     if (!product) {
-        alert("Product not found!");
+        notify("Product not found!", "danger");
         window.location.href = "index.html";
         return;
     }
@@ -70,3 +70,18 @@ $(document).on("click", "#addToCartBtn", function () {
     addToCart(id, size, 1);
     updateCartBadge();
 });
+
+function notify(msg, type = "info", timeout = 3000) {
+    const box = $("#notifyBox");
+    const notify = box.find(".notify");
+
+    notify.removeClass()
+        .addClass(`notify notify-${type} shadow`)
+        .html(msg);
+
+    box.stop(true, true).fadeIn(200);
+
+    setTimeout(() => {
+        box.fadeOut(400);
+    }, timeout);
+}

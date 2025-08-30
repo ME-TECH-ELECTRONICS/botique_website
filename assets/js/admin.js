@@ -2,7 +2,7 @@ $(document).ready(async function () {
     initUploadSection('single');
     initUploadSection('multiple');
     const fieldRules = {
-        '#productName': { regex: /[^a-zA-Z0-9@.]/g, max: 40 },
+        '#productName': { regex: /[^a-zA-Z0-9 ]/g, max: 40 },
         '#productDescription': { regex: /[^a-zA-Z0-9_@$!%*?&. ]/g, max: 1024 },
         '#productPrice': { regex: /[^0-9.]/g, max: 10 },
         '#productMRP': { regex: /[^0-9.]/g, max: 10 },
@@ -77,7 +77,7 @@ $(document).ready(async function () {
         if (thumbnailFile) {
             formData.append('thumbnail', thumbnailFile); // replaces existing thumbnail entry
         } else {
-            alert("Please select a thumbnail image");
+            notify("Please select a thumbnail image", "danger");
             return;
         }
 
@@ -100,6 +100,7 @@ $(document).ready(async function () {
         formData.append('category', category);
         formData.append('stockStatus', stockStatus);
         formData.append('sizes', sizes.join(','));
+        formData.append('action_type', 'create');
 
         // Send data to server
         $.ajax({
@@ -110,7 +111,8 @@ $(document).ready(async function () {
             contentType: false,
             success: function (response) {
                 if (response.success) {
-                    notify(response.message, "success")
+                    console.log(response.message, response)
+                    notify(`this is message:${response.message}`, "success")
                     // Reset form
                     $('#createProductForm')[0].reset();
                     $('#sizesPanel').empty();
@@ -132,11 +134,11 @@ $(document).ready(async function () {
 
         $.each(this.files, function (_, file) {
             if (!file.type.startsWith("image/")) {
-                alert(`${file.name} is not an image!`);
+                notify(`${file.name} is not an image!`, "danger");
                 return;
             }
             if (file.size > 1024 * 1024) {
-                alert(`${file.name} is larger than 1MB!`);
+                notify(`${file.name} is larger than 1MB!`, "danger");
                 return;
             }
 
@@ -290,8 +292,30 @@ $(document).on("click", ".productDelete", function () {
     }
     //get id from data-id attribute
     const id = $(this).data("id");
-    deleteProduct(id);
-    reloadPRoductsAndRender();
+    if (!id) {
+        notify("No product ID found", "danger");
+        return;
+    }
+    $.ajax({
+        url: "/admin/actions.php",
+        method: "POST",
+        data: {
+            action_type: "delete",
+            id: id
+        },
+        success: function (response) {
+            if (response.success) {
+                notify(response.message, "success");
+            } else {
+                notify(response.message, "danger");
+            }
+        },
+        error: function () {
+            notify("An error occurred while deleting the product", "danger");
+        }
+    });
+
+    reloadProductsAndRender();
 });
 
 $(document).on("click", ".productEdit", function () {
@@ -299,7 +323,7 @@ $(document).on("click", ".productEdit", function () {
     const product = products.find(p => p.id === id);
 
     if (!product) {
-        //TODO: Use notify instead of alert
+        //TODO: Use notify instead of notify
         notify("Product not found", "danger");
         return;
     }
@@ -323,6 +347,8 @@ $(document).on("click", ".productEdit", function () {
     renderEditSizePanel(product.sizes)
     // Store productId somewhere hidden for update call
     $("#editProductForm").data("id", id);
+
+
 
 });
 
@@ -423,31 +449,13 @@ function sortSizes() {
 function getSizes(product) {
     sizes = [...new Set(products.flatMap(product => product.sizes))];
     const standardSizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "Free Size"];
-    sizes =  [...new Set([...sizes, ...standardSizes])];
+    sizes = [...new Set([...sizes, ...standardSizes])];
     sortSizes();
 }
 
 
 
 function renderSizesPanel() {
-    /* 
-       <input type="checkbox" id="sizeM" name="sizes" value="M" hidden>
-                                    <label for="sizeM" class="size-pill">M</label>
- 
-                                    <input type="checkbox" id="sizeX" name="sizes" value="X" hidden>
-                                    <label for="sizeX" class="size-pill">X</label>
- 
-                                    <input type="checkbox" id="sizeXXL" name="sizes" value="XXL" hidden>
-                                    <label for="sizeXXL" class="size-pill">XXL</label>
- 
-                                    <input type="checkbox" id="sizeXXXL" name="sizes" value="XXXL" hidden>
-                                    <label for="sizeXXXL" class="size-pill">XXXL</label>
- 
-                                    <input type="checkbox" id="sizeXXXXL" name="sizes" value="XXXXL" hidden>
-                                    <label for="sizeXXXXL" class="size-pill">XXXXL</label>
- 
-                                    creteate this form sizes array values
-    */
     const sizesPanel = $("#sizesPanel").empty();
     sizes.forEach(size => {
         const input = $(` <input type="checkbox" id="size${size}" name="sizes" value="${size}" hidden>`);
@@ -463,8 +471,8 @@ function addNewSizes() {
     const rawValue = input.val().trim();
 
     if (rawValue === "") {
-        //TODO: USe notify instead of alert
-        notifyt("Please enter at least one size.", "danger");
+        //TODO: USe notify instead of notify
+        notify("Please enter at least one size.", "danger");
         return;
     }
 
@@ -480,62 +488,6 @@ function addNewSizes() {
     modal.hide();
     renderSizesPanel();
 }
-
-//TODO: accept the form form edit modal and extract data from it and then call this function
-async function editProduct(product) {
-    try {
-        const response = await fetch("edit_product.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(product)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            console.log("✅ Product updated:", result.message);
-            // Optionally refresh UI
-        } else {
-            console.error("❌ Update failed:", result.message);
-            alert("Update failed: " + result.message);
-        }
-    } catch (err) {
-        console.error("⚠️ Error updating product:", err);
-        alert("Error updating product");
-    }
-}
-
-// Delete product function
-async function deleteProduct(productId) {
-    try {
-        const response = await fetch("deleteProduct.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ id: productId })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            console.log("🗑️ Product deleted:", result.message);
-            // Optionally refresh UI
-        } else {
-            console.error("❌ Delete failed:", result.message);
-            alert("Delete failed: " + result.message);
-        }
-    } catch (err) {
-        console.error("⚠️ Error deleting product:", err);
-        alert("Error deleting product");
-    }
-}
-
-
-
-
 
 function initUploadSection(type) {
     const container = $(`#${type}-upload-container`);
@@ -580,13 +532,13 @@ function handleFiles(files, type, previewList) {
 
         // Validate file type
         if (!file.type.match('image.*')) {
-            alert('Please select only image files');
+            notify('Please select only image files', "danger");
             continue;
         }
 
         // Validate file size (1MB = 1,048,576 bytes)
         if (file.size > 1048576) {
-            alert('File size must be less than 1MB');
+            notify('File size must be less than 1MB', "danger");
             continue;
         }
 
@@ -624,71 +576,66 @@ function handleFiles(files, type, previewList) {
 }
 
 
-// ===== CREATE PRODUCT =====
-// $("#createProductForm").on("submit", function (e) {
-//     e.preventDefault(); // prevent page reload
-
-//     const stockStatusBool = convertStockStatusStringToBool($("#productStockStatus").val());
-//     const productData = {
-//         name: $("#productName").val(),
-//         description: $("#productDescription").val(),
-//         sizes: collectSizes("#sizesPanel"),
-//         price: parseFloat($("#productPrice").val()) || 0,
-//         mrp: parseFloat($("#productMRP").val()) || 0,
-//         category: ($("#productCategory").val() === "new") ? $("#newCategory").val() : $("#productCategory").val(),
-//         stockStatus: stockStatusBool,
-//         thumbnail: $("#single-upload-input")[0].files[0] || null,
-//         images: $("#multiple-upload-input")[0].files || []
-//     };
-
-//     console.log("Submitting createProduct:", productData);
-
-//     // Call your backend function
-//     createProduct(productData);
-
-//     // Reset form after create
-//     this.reset();
-
-//     reloadPRoductsAndRender();
-// });
 
 
 // ===== EDIT PRODUCT =====
 $("#editProductForm").on("submit", function (e) {
     e.preventDefault();
     const stockStatusBool = convertStockStatusStringToBool($("#productStockStatus").val());
+
+    // Add selected sizes to form data
+    const sizes = [];
+    $('#editSizesPanel input[type="checkbox"]:checked').each(function () {
+        sizes.push($(this).val());
+
+    });
     const productData = {
-        id: $("#editProductForm").data("product-id"), // set when opening modal
+        id: parseInt(("#editProductForm").data("product-id")), // set when oping modal
         name: $("#editProductName").val(),
         description: $("#editProductDescription").val(),
-        sizes: collectSizes("#eidtSizesPanel"),
+        sizes: sizes,
         price: parseFloat($("#editProductPrice").val()) || 0,
         mrp: parseFloat($("#editProductMRP").val()) || 0,
         category: ($("#editProductCategory").val() === "new") ? $("#newCategoryEdit").val() : $("#editProductCategory").val(),
-        stockStatus: $("#editProductStockStatus").val()
+        stockStatus: stockStatusBool,
+        action_type: "edit"
     };
 
-    console.log("Submitting editProduct:", productData);
 
-    // Call your backend function
-    editProduct(productData);
+    // Call your backend function hello...
+    $.ajax({
+        url: "/admin/actions.php",
+        method: "POST",
+        data: productData,
+        success: function (response) {
+            if (response.success) {
+                notify(response.message);
+                $("#editProductModal").modal("hide");
+                reloadProductsAndRender();
+            } else {
+                notify(response.message, "danger");
+            }
+        },
+        error: function (error) {
+            notify('Error updating product', "danger");
+        }
+    });
 
     // Close modal after save
-    $("#editProductModal").modal("hide");
-    reloadPRoductsAndRender();
+
 });
 
-function notify(msg, type="info", timeout=3000) {
-  const box = $("#notifyBox");
-  const alert = box.find(".alert");
+function notify(msg, type = "info", timeout = 3000) {
+    const box = $("#notifyBox");
+    const notify = box.find(".notify");
 
-  alert.removeClass()
-       .addClass(`alert alert-${type} shadow`)
-       .html(msg);
+    notify.removeClass()
+        .addClass(`notify notify-${type} shadow`)
+        .html(msg);
 
-  box.stop(true, true).fadeIn(200);
+    box.stop(true, true).fadeIn(200);
 
-  setTimeout(() => {
-    box.fadeOut(400);
-  }, timeout);
+    setTimeout(() => {
+        box.fadeOut(400);
+    }, timeout);
 }

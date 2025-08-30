@@ -3,9 +3,23 @@ require_once '../config.php'; // fixed path (remove starting slash if same dir)
 // Set appropriate headers
 header('Content-Type: application/json');
 
+function productExists(mysqli $conn, int $id): bool
+{
+    $stmt = $conn->prepare("SELECT 1 FROM products WHERE id = ? LIMIT 1");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->store_result();
+
+    $exists = $stmt->num_rows > 0;
+
+    $stmt->free_result();
+    $stmt->close();
+
+    return $exists;
+}
+
 // Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit;
 }
@@ -22,7 +36,6 @@ enum ActionType: string
 $actionTypeStr = $_POST['action_type'] ?? ActionType::NoAction->value;
 
 if ($actionTypeStr === ActionType::NoAction->value) {
-    http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'No action type provided']);
     exit;
 }
@@ -31,6 +44,7 @@ if ($actionTypeStr === ActionType::NoAction->value) {
 switch ($actionTypeStr) {
     case ActionType::Create->value: {
             if (!isset($_POST['title']) && !isset($_POST['description']) && !isset($_POST['price']) && !isset($_POST['mrp']) && !isset($_POST['category']) && !isset($_POST['stockStatus']) && !isset($_POST['sizes'])) {
+                
                 exit();
             }
             // Get product name from form data
@@ -196,7 +210,10 @@ switch ($actionTypeStr) {
             $productId = isset($_POST['id']);
             $productName = isset($_POST['title']);
             $sanitizedProductName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $productName);
-
+            if (!productExists($conn, $productId)) {
+                echo json_encode(['success' => false, 'message' => 'Product not found']);
+                exit();
+            }
             // -------------------------
             // Collect Product Data
             // ------------------------
@@ -245,13 +262,16 @@ switch ($actionTypeStr) {
             exit;
         }
     case ActionType::Delete->value: {
-
-            //delete product with id id from sql
-            $id = $_POST['id'] ?? null;
-            if ($id === null) {
-                http_response_code(400);
+            if (!isset($_POST['id'])) {
                 echo json_encode(['success' => false, 'message' => 'No id provided']);
-                exit;
+                exit();
+            }
+            $id = $_POST['id'];
+
+
+            if (!productExists($conn, $productId)) {
+                echo json_encode(['success' => false, 'message' => 'Product not found']);
+                exit();
             }
 
             $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
@@ -266,7 +286,6 @@ switch ($actionTypeStr) {
         }
     default: {
             //invalid action type
-            http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Invalid action type']);
             $conn->close();
             exit;
