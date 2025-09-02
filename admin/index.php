@@ -101,7 +101,7 @@ if (!isset($_SESSION["admin_logged_in"])) {
                     <div class="table-container" id="productsTableContainer">
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px;">
                             <h3>All Products</h3>
-                            <button class="btn btn-primary">Add New Product</button>
+                            <button class="btn btn-primary" id="refreshProductsBtn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
                         </div>
 
                         <!-- Table + controls will be injected here -->
