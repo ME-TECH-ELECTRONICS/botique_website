@@ -8,12 +8,8 @@ $(document).ready(async function () {
         '#productMRP': { regex: /[^0-9.]/g, max: 10 },
         '#productCategory': { regex: /[^a-zA-Z0-9]/g, max: 20 },
         '#whatsappNumber': { regex: /[^0-9]/g, max: 10 },
-        // '#username': { regex: /[^a-zA-Z0-9_]/g, max: 15 },
-        // '#registerEmail': { regex: /[^a-zA-Z0-9@.]/g, max: 40 },
-        // '#forgotEmail': { regex: /[^a-zA-Z0-9@.]/g, max: 40 }
     };
 
-    // Apply filtering and length limit
     $.each(fieldRules, function (selector, rule) {
         $(selector).on("input", function () {
             let val = this.value.replace(rule.regex, '');
@@ -27,7 +23,6 @@ $(document).ready(async function () {
     const $fileInput = $("#productImages");
     const $preview = $("#preview");
 
-    // Clicking box opens file dialog
     $("#uploadBox").on("click", function () {
         $fileInput.trigger("click");
     });
@@ -40,7 +35,6 @@ $(document).ready(async function () {
             notify("Please enter a valid 10-digit Whatsapp number", "danger");
             return;
         }
-        // Perform AJAX request to save settings
         $.ajax({
             url: 'settings.php',
             type: 'POST',
@@ -63,31 +57,24 @@ $(document).ready(async function () {
 
     $('#createProductForm').on('submit', function (e) {
         e.preventDefault();
-
         const title = $("#productName").val();
         const description = $("#productDescription").val();
         const price = parseFloat($("#productPrice").val()) || 0;
         const mrp = parseFloat($("#productMRP").val()) || 0;
         const category = ($("#productCategory").val() === "new") ? $("#newCategory").val() : $("#productCategory").val();
         const stockStatus = $("#productStockStatus").val();
-
         const thumbnailFile = $('#single-upload-input')[0].files[0];
         const formData = new FormData();
-
         if (thumbnailFile) {
-            formData.append('thumbnail', thumbnailFile); // replaces existing thumbnail entry
+            formData.append('thumbnail', thumbnailFile);
         } else {
             notify("Please select a thumbnail image", "danger");
             return;
         }
-
         const files = $('#multiple-upload-input')[0].files;
         [...files].forEach(file => {
             formData.append('images[]', file);
         });
-
-
-        // Add selected sizes to form data
         const sizes = [];
         $('#sizesPanel input[type="checkbox"]:checked').each(function () {
             sizes.push($(this).val());
@@ -101,8 +88,6 @@ $(document).ready(async function () {
         formData.append('stockStatus', stockStatus);
         formData.append('sizes', sizes.join(','));
         formData.append('action_type', 'create');
-
-        // Send data to server
         $.ajax({
             url: 'actions.php',
             type: 'POST',
@@ -112,9 +97,7 @@ $(document).ready(async function () {
             contentType: false,
             success: function (response) {
                 if (response.success) {
-
                     notify(`this is message:${response.message}`, "success")
-                    // Reset form
                     $('#createProductForm')[0].reset();
                     $('#sizesPanel').empty();
                     $('#single-preview-list').empty();
@@ -131,8 +114,7 @@ $(document).ready(async function () {
 
     // Handle file selection
     $fileInput.on("change", function () {
-        $preview.empty(); // Clear old previews
-
+        $preview.empty(); 
         $.each(this.files, function (_, file) {
             if (!file.type.startsWith("image/")) {
                 notify(`${file.name} is not an image!`, "danger");
@@ -142,7 +124,6 @@ $(document).ready(async function () {
                 notify(`${file.name} is larger than 1MB!`, "danger");
                 return;
             }
-
             const reader = new FileReader();
             reader.onload = function (e) {
                 $("<img>").attr("src", e.target.result).appendTo($preview);
@@ -155,51 +136,32 @@ $(document).ready(async function () {
     renderCategorySelector();
     getSizes();
     renderSizesPanel();
-    // Handle menu item clicks
     $('.menu-item').click(function () {
-        // Remove active class from all menu items
         $('.menu-item').removeClass('active');
-
-        // Add active class to clicked menu item
         $(this).addClass('active');
-
-        // Hide all content sections
         $('.content-section').removeClass('active');
-
-        // Show the targeted content section
         const target = $(this).data('target');
         $(`#${target}`).addClass('active');
-
-
-        // On mobile, close sidebar after selection
         if ($(window).width() < 992) {
             $('.sidebar').removeClass('show');
             $('.sidebar-overlay').removeClass('active');
         }
     });
-
-    // Toggle sidebar
     $('.toggle-sidebar, .close-sidebar').click(function (e) {
         e.stopPropagation();
         $('.sidebar').toggleClass('show');
         $('.sidebar-overlay').toggleClass('active');
     });
-
-    // Close sidebar when clicking outside
     $('.sidebar-overlay').click(function () {
         $('.sidebar').removeClass('show');
         $('.sidebar-overlay').removeClass('active');
     });
-
-    // Close sidebar when clicking on main content on mobile
     $('.main-content').click(function () {
         if ($(window).width() < 992 && $('.sidebar').hasClass('show')) {
             $('.sidebar').removeClass('show');
             $('.sidebar-overlay').removeClass('active');
         }
     });
-
-    // Handle window resize
     $(window).resize(function () {
         if ($(window).width() >= 992) {
             $('.sidebar').addClass('show');
@@ -208,14 +170,11 @@ $(document).ready(async function () {
             $('.sidebar').removeClass('show');
         }
     });
-
-    // Initialize sidebar state based on screen size
     if ($(window).width() >= 992) {
         $('.sidebar').addClass('show');
     }
 
 });
-
 
 let currentPage = 1;
 let pageSize = 10;
@@ -224,8 +183,6 @@ function renderTable() {
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     const pageItems = products.slice(start, end);
-
-    // build table
     let html = `
     <table>
       <thead>
@@ -241,7 +198,6 @@ function renderTable() {
       </thead>
       <tbody>
   `;
-
     $.each(pageItems, (i, p) => {
         html += `
       <tr>
@@ -262,10 +218,8 @@ function renderTable() {
     html += `</tbody></table>`;
 
     $("#productsTableWrapper").html(html);
-
     renderPagination();
 }
-
 
 async function reloadProductsAndRender() {
     await getProducts(true);
@@ -287,18 +241,10 @@ function convertStockStatusStringToBool(stockStatus) {
 }
 
 $(document).on("click", ".productDelete", function () {
-    //get id from data-id attribute
     const id = $(this).data("id");
-    if (!id) {
-        notify("No product ID found", "danger");
-        return;
-    }
-
-    // Set up the confirmation modal
+    if (!id) return notify("No product ID found", "danger");
     $('#confirmationModal').modal('show');
-
     $('#confirmDeleteBtn').off('click').on('click', function () {
-         // Close the modal
         $('#confirmationModal').modal('hide');
         $.ajax({
             url: "/admin/actions.php",
@@ -319,7 +265,6 @@ $(document).on("click", ".productDelete", function () {
                 notify("An error occurred while deleting the product", "danger");
             }
         });
-
         reloadProductsAndRender();
     });
 });
@@ -327,48 +272,35 @@ $(document).on("click", ".productDelete", function () {
 $(document).on("click", ".productEdit", function () {
     const id = $(this).data("id");
     const product = products.find(p => p.id === id);
-
-    if (!product) {
-        //TODO: Use notify instead of notify
-        notify("Product not found", "danger");
-        return;
-    }
-
+    if (!product) return notify("Product not found", "danger");
     const stockStatusStr = converIntToStockStatus(product.stock)
-    // Fill modal fields with product data
     $("#editProductName").val(product.title);
     $("#editProductDescription").val(product.description);
     $("#editProductPrice").val(product.price);
     $("#editProductMRP").val(product.mrp);
-    //fill the product categories from the productCategories array and select the product's category
     let categoryOptions = `<option value="">Select Category</option>`;
     $.each(productCategories, (i, category) => {
         categoryOptions += `<option value="${category}" ${category === product.category ? "selected"
             : ""}>${category}</option>`;
     });
     categoryOptions += `<option value="new">➕ New Category</option>`;
-    $("#editProductCategory").html(categoryOptions);//select default values as product.category
+    $("#editProductCategory").html(categoryOptions);
     $("#editProductCategory").val(product.category);
     $("#editProductStockStatus").val(stockStatusStr);
     renderEditSizePanel(product.sizes)
-    // Store productId somewhere hidden for update call
     $("#editProductForm").data("id", id);
-
-
 
 });
 
 function toggleNewCategoryInputEditSection() {
     const category = $("#editProductCategory").val();
     const newCategoryGroup = $("#newCategoryGroupEdit");
-
     if (category === "new") {
-        newCategoryGroup.show();   // jQuery method
+        newCategoryGroup.show();
     } else {
-        newCategoryGroup.hide();   // jQuery method
+        newCategoryGroup.hide();
     }
 }
-
 
 function renderPagination() {
     const totalPages = Math.ceil(products.length / pageSize);
@@ -408,45 +340,32 @@ function renderEditSizePanel(currentSizes) {
         const label = $(` <label for="size${size}" class="size-pill">${size}</label>`);
         sizesPanel.append(input);
         sizesPanel.append(label);
-        //if size is in currentSizes array, then check the checkbox
         if (currentSizes.includes(size)) {
             input.prop("checked", true);
         }
     });
-
 }
 
 function renderCategorySelector() {
     const categorySelector = $("#productCategory")
-
     let html = `<option value="">Select Category</option>`;
     $.each(productCategories, (i, category) => {
         html += `<option value="${category}">${category}</option>`;
     });
-
     html += `<option value="new">➕ New Category</option>`;
     categorySelector.html(html);
 }
-
 
 function sortSizes() {
     const order = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "Free Size"];
     sizes = sizes.sort((a, b) => {
         const indexA = order.indexOf(a);
         const indexB = order.indexOf(b);
-
-        // If both are known sizes, compare by their index
         if (indexA !== -1 && indexB !== -1) {
             return indexA - indexB;
         }
-
-        // If only A is known, A comes first
         if (indexA !== -1) return -1;
-
-        // If only B is known, B comes first
         if (indexB !== -1) return 1;
-
-        // If both are unknown, sort alphabetically (or keep original order)
         return a.localeCompare(b);
     });
 }
@@ -458,8 +377,6 @@ function getSizes(product) {
     sizes = [...new Set([...sizes, ...standardSizes])];
     sortSizes();
 }
-
-
 
 function renderSizesPanel() {
     const sizesPanel = $("#sizesPanel").empty();
@@ -474,19 +391,10 @@ function renderSizesPanel() {
 function addNewSizes() {
     const input = $("#newSizesInput");
     const rawValue = input.val().trim();
-
-    if (rawValue === "") {
-        //TODO: USe notify instead of notify
-        notify("Please enter at least one size.", "danger");
-        return;
-    }
-
-
+    if (rawValue === "") return notify("Please enter at least one size.", "danger");
     const newSizes = rawValue.split(",").map(s => s.trim()).filter(s => s !== "");
-    //add new sizes to sizes array if not already present
     sizes = [...new Set([...sizes, ...newSizes])];
     sortSizes();
-
     input.val("");
     const modalEl = $("#addSizeModal");
     const modal = bootstrap.Modal.getInstance(modalEl);
@@ -499,19 +407,13 @@ function initUploadSection(type) {
     const input = $(`#${type}-upload-input`);
     const button = $(`#${type}-upload-btn`);
     const previewList = $(`#${type}-preview-list`);
-
-    // Click on button to trigger file input
     button.on('click', function () {
         input.click();
     });
-
-    // Handle file selection
     input.on('change', function (e) {
         handleFiles(e.target.files, type, previewList);
 
     });
-
-    // Drag and drop events
     container.on('dragover', function (e) {
         e.preventDefault();
         container.addClass('drag-over');
@@ -534,21 +436,15 @@ function initUploadSection(type) {
 function handleFiles(files, type, previewList) {
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-
-        // Validate file type
         if (!file.type.match('image.*')) {
             notify('Please select only image files', "danger");
             continue;
         }
-
-        // Validate file size (1MB = 1,048,576 bytes)
         if (file.size > 1048576) {
             notify('File size must be less than 1MB', "danger");
             continue;
         }
-
         const reader = new FileReader();
-
         reader.onload = function (e) {
             const previewItem = $(
                 '<div class="preview-item">' +
@@ -557,45 +453,32 @@ function handleFiles(files, type, previewList) {
                 '<div class="preview-info">' + file.name + '</div>' +
                 '</div>'
             );
-
-            // Add remove functionality
             previewItem.find('.preview-remove').on('click', function () {
                 previewItem.remove();
             });
-
-            // For single upload, clear previous previews
             if (type === 'single') {
                 previewList.empty();
             }
-
             previewList.append(previewItem);
         }
-
         reader.readAsDataURL(file);
-
-        // For single upload, only process the first file
         if (type === 'single') {
             break;
         }
     }
 }
 
-
-
-
 // ===== EDIT PRODUCT =====
 $("#editProductForm").on("submit", function (e) {
     e.preventDefault();
     const stockStatusBool = convertStockStatusStringToBool($("#editProductStockStatus").val());
-
-    // Add selected sizes to form data
     const sizes1 = [];
     $('#editSizesPanel input[type="checkbox"]:checked').each(function () {
         sizes1.push($(this).val());
 
     });
     const productData = {
-        id: parseInt($("#editProductForm").data("id")), // set when oping modal
+        id: parseInt($("#editProductForm").data("id")),
         name: $("#editProductName").val(),
         description: $("#editProductDescription").val(),
         sizes: sizes1,
@@ -605,10 +488,6 @@ $("#editProductForm").on("submit", function (e) {
         stockStatus: stockStatusBool,
         action_type: "edit"
     };
-
-
-
-    // Call your backend function hello...
     $.ajax({
         url: "/admin/actions.php",
         method: "POST",
@@ -627,9 +506,6 @@ $("#editProductForm").on("submit", function (e) {
             notify('Error updating product', "danger");
         }
     });
-
-    // Close modal after save
-
 });
 $("#refreshProductsBtn").on("click", function() {
     reloadProductsAndRender();
