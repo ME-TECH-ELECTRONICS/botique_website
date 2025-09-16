@@ -16,10 +16,9 @@ $(document).ready(async function () {
   await getProducts();
   renderCartTable();
 
-  $("#checkoutForm").on("submit", function (e) {
+  $("#checkoutForm").on("submit", async function (e) {
     e.preventDefault();
 
-    const waNumber = "+916282902843";
     notify("Processing your order...", "info");
 
     const fd = new FormData(this);
@@ -50,6 +49,9 @@ $(document).ready(async function () {
     if (notes) lines.push("", `Notes: ${notes}`);
 
     const text = encodeURIComponent(lines.join("\n"));
+    const res = await fetch("/admin/settings.php");
+    const data = await res.json();
+    const waNumber = data.whatsappNumber;
     const waUrl = `https://wa.me/${waNumber}?text=${text}`;
     window.location.href = waUrl;
 
