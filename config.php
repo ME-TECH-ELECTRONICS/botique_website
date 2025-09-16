@@ -3,7 +3,7 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'testshop');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('CLOUDFLARE_TURNSTILE_SECRET', '0x4AAAAAABi621wRGdLN-NPG9tMJCYxdgyw');
+define('CLOUDFLARE_TURNSTILE_SECRET', '0x4AAAAAAB1evPtf0Xd2S0lPR8Q1ucEltYk');
 
 
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);

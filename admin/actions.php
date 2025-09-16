@@ -145,7 +145,7 @@ switch ($actionTypeStr) {
                 'price' => $_POST['price'] ?? 0,
                 'mrp' => $_POST['mrp'] ?? 0,
                 'category' => ($_POST['category'] === 'other') ? ($_POST['newCategory'] ?? 'Other') : $_POST['category'],
-                'stockStatus' => $_POST['stockStatus'] ?? 'InStock',
+                'stockStatus' =>  $_POST['stockStatus'] == 'true' ? 1 : 0,
                 'sizes' => isset($_POST['sizes']) ? explode(',', $_POST['sizes']) : []
             ];
 

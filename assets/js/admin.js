@@ -62,7 +62,9 @@ $(document).ready(async function () {
         const price = parseFloat($("#productPrice").val()) || 0;
         const mrp = parseFloat($("#productMRP").val()) || 0;
         const category = ($("#productCategory").val() === "new") ? $("#newCategory").val() : $("#productCategory").val();
-        const stockStatus = $("#productStockStatus").val();
+        const stockStatus = convertStockStatusStringToBool($("#productStockStatus").val());
+        //log the stock 
+        console.log(`stock status is ${stockStatus}`);
         const thumbnailFile = $('#single-upload-input')[0].files[0];
         const formData = new FormData();
         if (thumbnailFile) {
