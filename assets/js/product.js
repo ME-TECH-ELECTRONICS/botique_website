@@ -76,14 +76,3 @@ $(document).on("click", "#addToCartBtn", function () {
     updateCartBadge();
 });
 
-function notify(message, type = "info", timeout = 3000) {
-    var $toast = $('#myToast');
-    $toast.removeClass('toast-success toast-error toast-info');
-    $toast.addClass(`toast-${type}`);
-    $toast.find('.toast-body').text(message);
-    var toast = new bootstrap.Toast($toast[0]);
-    toast.show();
-    setTimeout(() => {
-        toast.hide();
-    }, timeout);
-}
