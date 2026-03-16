@@ -344,6 +344,7 @@ if (!isset($_SESSION["admin_logged_in"])) {
             </div>
         </div>
     </div>
+    <script src="/assets/js/utiils.js"></script>
     <script src="/assets/js/getProductsJson.js"></script>
     <script src="/assets/js/admin.js"></script>
 </body>
